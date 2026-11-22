@@ -66,7 +66,7 @@ $routes->group('specimen', ['filter' => 'role:1,2,3'], function ($routes) {
     $routes->post('allSpecimensAjax', 'SpecimenController::allSpecimensAjax');
 
     // NEW ISOLATED ROUTES FOR BULK OPERATION WORKFLOWS
-    $routes->get('bulk', 'SpecimenController::bulk'); // Opens the new view
+    $routes->get('bulk', 'SpecimenController::index'); // Opens the new view
     $routes->post('saveBulk', 'SpecimenController::saveBulk'); // Form destination endpoint
 
 });
