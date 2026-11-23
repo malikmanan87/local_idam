@@ -539,12 +539,19 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
 
             $.get('<?= base_url('specimen/containers/today') ?>/' + selectedStorageId + '/' + selectedContainerNumber, function(data) {
                 if (!data || data.length === 0) {
-                    $('#containerButtons').html('<small class="text-danger p-1">No box assigned for today.</small>');
+                    $('#containerButtons').html('<small class="text-danger p-1">No active box assigned for today.</small>');
                     return;
                 }
+                let renderedContainers = 0;
                 data.forEach(row => {
-                    $('#containerButtons').append(`<button type="button" class="btn btn-outline-primary m-1 container-btn" data-id="${row.container_id}">${row.container_label}</button>`);
+                    if (row.status == 1 || row.status === undefined) {
+                        renderedContainers++;
+                        $('#containerButtons').append(`<button type="button" class="btn btn-outline-primary m-1 container-btn" data-id="${row.container_id}">${row.container_label}</button>`);
+                    }
                 });
+                if (renderedContainers === 0) {
+                    $('#containerButtons').html('<small class="text-danger p-1">No active box assigned for today.</small>');
+                }
             });
         });
 

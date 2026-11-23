@@ -73,7 +73,7 @@ class SpecimenController extends BaseController
     // -----------------------------
     public function getStorages($units_code)
     {
-        $unit = (new UnitsModel())->where('units_code', $units_code)->first();
+        $unit = (new UnitsModel())->where('units_code', $units_code)->where('status', 1)->first();
 
         if (!$unit) {
             return $this->response->setJSON([]);
@@ -81,26 +81,30 @@ class SpecimenController extends BaseController
 
         $storages = (new StoragesModel())
             ->where('units_code', $units_code)
+            ->where('status', 1) // Hanya storan aktif
             ->findAll();
 
         return $this->response->setJSON($storages);
     }
 
     // -----------------------------
-    // AJAX: container numbers by storage
+    // AJAX: container numbers by storage (Active today only)
     // -----------------------------
     public function getContainerNumbers($storage_id)
     {
+        $today = (int) date('w');
         $db = \Config\Database::connect();
 
-        // GROUP BY container_number — pastikan setiap nombor box muncul sekali sahaja
-        // Hanya container AKTIF (status=1) yang boleh digunakan untuk pendaftaran
-        $numbers = $db->table('containers')
-            ->select('container_number, MAX(status) as status')
-            ->where('storage_id', (int)$storage_id)
-            ->where('status', 1) // ← Hanya container aktif
-            ->groupBy('container_number')
-            ->orderBy('container_number', 'ASC')
+        // GROUP BY container_number — hanya paparkan box number yang mempunyai container AKTIF (status=1) untuk HARI INI
+        $numbers = $db->table('containers c')
+            ->select('c.container_number, MAX(c.status) as status')
+            ->join('storages st', 'c.storage_id = st.storage_id', 'inner')
+            ->where('c.storage_id', (int)$storage_id)
+            ->where('c.container_day', $today)
+            ->where('c.status', 1) // Hanya container aktif hari ini
+            ->where('st.status', 1) // Hanya jika storan induk aktif
+            ->groupBy('c.container_number')
+            ->orderBy('c.container_number', 'ASC')
             ->get()
             ->getResultArray();
 
@@ -109,7 +113,7 @@ class SpecimenController extends BaseController
 
 
     // -----------------------------
-    // AJAX: today-only containers by storage + number (FIXED FOR ALL ROLES)
+    // AJAX: today-only containers by storage + number (ACTIVE STATUS 1 ONLY)
     // -----------------------------
     public function getTodayContainers($storage_id, $container_number)
     {
@@ -118,10 +122,10 @@ class SpecimenController extends BaseController
 
         $containers = $containersModel
             ->select('container_id, container_label, container_day, status')
-            ->where('storage_id', $storage_id)
-            ->where('container_number', $container_number)
+            ->where('storage_id', (int)$storage_id)
+            ->where('container_number', (int)$container_number)
             ->where('container_day', $today)
-            ->whereIn('status', [1, 2, 3]) // Allowing all statuses so dynamic selector chain triggers safely
+            ->where('status', 1) // Hanya container aktif dibenarkan untuk pendaftaran
             ->orderBy('container_id', 'ASC')
             ->findAll();
 
@@ -178,10 +182,14 @@ class SpecimenController extends BaseController
             return redirect()->back()->with('error', implode(', ', $this->validator->getErrors()));
         }
 
-        // Ensure container exists and is for today
+        // Ensure container exists, is active and is for today
         $container = (new ContainersModel())->find($data['container_id']);
         if (! $container) {
             return redirect()->back()->with('error', 'Invalid container selected.');
+        }
+
+        if ((int)$container['status'] !== 1) {
+            return redirect()->back()->with('error', 'Selected container is not active.');
         }
 
         $today = (int) date('w');
@@ -472,11 +480,13 @@ class SpecimenController extends BaseController
 
         $specimens = $specimensQuery->orderBy('s.created_at', 'DESC')->get()->getResultArray();
 
-        // 3. Query Builder untuk Senarai Kotak Kontena (Containers Grid)
+        // 3. Query Builder untuk Senarai Kotak Kontena (Containers Grid) - Hanya yang AKTIF
         $containersQuery = $db->table('containers c')
             ->select('c.container_id, c.container_label, c.duration_id, st.storage_name, u.units_name, u.units_code')
             ->join('storages st', 'c.storage_id = st.storage_id', 'left')
-            ->join('units u', 'st.units_code = u.units_code', 'left');
+            ->join('units u', 'st.units_code = u.units_code', 'left')
+            ->where('c.status', 1)
+            ->where('st.status', 1);
 
         // SEKURITI KONTENA: Diubah ke u.units_id (Membaca alias jadual units yang di-join)
         if ($userRole !== 3) {

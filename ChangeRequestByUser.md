@@ -12,6 +12,7 @@
 | **CR-01** | Penambahan Kategori Storan: **Chiller (14 days)** | Maintenance, Dashboard, Specimen, Disposal, Reports | Selesai (Susunan Piawai: Chiller 7D, Chiller 14D, Freezer 14D, Freezer 21D) |
 | **CR-02** | Butang Pilihan Saiz Grid Slot: **100, 70, atau 50 Slots** pada New Entry | New Entry (`bulk_registration`), Controller (`saveBulk`), All List | Ringan / Mudah Diasingkan |
 | **CR-03** | Butang **Dispose All in Queue** (Lupus Semua Sampel Matang dalam Kategori) | Disposal View (`disposal_list.php`), Controller (`SpecimenController`), Routes | Selesai (Menyelesaikan Had Pilihan 10 Sampel Per Muka Surat) |
+| **CR-04** | Penapisan Kontena & Storan Inactive | SpecimenController (`all_list`, `getTodayContainers`, `getContainerNumbers`, `getStorages`), `bulk_registration` | Selesai (Menghalang Kontena Inactive daripada Muncul di List & Containers dan New Entry) |
 
 ---
 
