@@ -185,7 +185,7 @@ class MaintenanceController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid Unit Code']);
         }
 
-        if (!in_array($duration_id, [1, 2, 3])) {
+        if (!in_array($duration_id, [1, 2, 3, 4])) {
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid duration parameters']);
         }
 
@@ -193,8 +193,8 @@ class MaintenanceController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid storage type classification']);
         }
 
-        if ($duration_id == 1 && $storage_type !== 'Chiller') {
-            return $this->response->setJSON(['success' => false, 'message' => 'Duration 1 must be Chiller']);
+        if (in_array($duration_id, [1, 4]) && $storage_type !== 'Chiller') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Duration 1 and 4 must be Chiller']);
         }
         if (in_array($duration_id, [2, 3]) && $storage_type !== 'Freezer') {
             return $this->response->setJSON(['success' => false, 'message' => 'Duration 2/3 must be Freezer']);
@@ -258,7 +258,7 @@ class MaintenanceController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid Unit Code']);
         }
 
-        if (!in_array($duration_id, [1, 2, 3])) {
+        if (!in_array($duration_id, [1, 2, 3, 4])) {
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid duration parameters']);
         }
 
@@ -266,8 +266,8 @@ class MaintenanceController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid storage type classification']);
         }
 
-        if ($duration_id == 1 && $storage_type !== 'Chiller') {
-            return $this->response->setJSON(['success' => false, 'message' => 'Duration 1 must be Chiller']);
+        if (in_array($duration_id, [1, 4]) && $storage_type !== 'Chiller') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Duration 1 and 4 must be Chiller']);
         }
         if (in_array($duration_id, [2, 3]) && $storage_type !== 'Freezer') {
             return $this->response->setJSON(['success' => false, 'message' => 'Duration 2/3 must be Freezer']);
@@ -338,7 +338,7 @@ class MaintenanceController extends BaseController
         if (empty($label)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Container label is required.']);
         }
-        if (!in_array($durationId, [1, 2, 3])) {
+        if (!in_array($durationId, [1, 2, 3, 4])) {
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid duration.']);
         }
         if (!in_array($status, [1, 2, 3])) {

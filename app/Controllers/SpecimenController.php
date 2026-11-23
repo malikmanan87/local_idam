@@ -431,6 +431,7 @@ class SpecimenController extends BaseController
             1 => '#1E90FF',
             2 => '#FFD700',
             3 => '#FF4500',
+            4 => '#00bcd4',
         ];
 
         $defaultColor = '#e9ecef';
@@ -567,6 +568,7 @@ class SpecimenController extends BaseController
             1 => '#1E90FF', // 7-day
             2 => '#FFD700', // 14-day
             3 => '#FF4500', // 21-day
+            4 => '#00bcd4', // 14-day Chiller
         ];
         $defaultColor = '#e9ecef';
 
@@ -738,13 +740,13 @@ class SpecimenController extends BaseController
     {
         try {
         $days         = (int)($this->request->getPost('days') ?? 7);
-        $durationMap  = [7 => 1, 14 => 2, 21 => 3];
+        $durationMap  = [7 => [1], 14 => [2, 4], 21 => [3]];
         $thresholdMap = [7 => 6, 14 => 13, 21 => 20]; // min age (days) before appearing in queue
-        $colorMap     = [1 => '#0d6efd', 2 => '#ffc107', 3 => '#dc3545'];
+        $colorMap     = [1 => '#0d6efd', 2 => '#ffc107', 3 => '#dc3545', 4 => '#00bcd4'];
 
-        $durationId = $durationMap[$days]  ?? 1;
+        $durationIds = $durationMap[$days]  ?? [1];
         $minAgeDays = $thresholdMap[$days] ?? 6;
-        $tubeColor  = $colorMap[$durationId] ?? '#0d6efd';
+        $tubeColor  = $colorMap[$durationIds[0]] ?? '#0d6efd';
 
         // Session role & unit filtering
         $role            = (int)(session()->get('role') ?? 0);
@@ -774,7 +776,7 @@ class SpecimenController extends BaseController
             ->join('storages st', 'c.storage_id = st.storage_id')
             ->join('units u', 'st.units_code = u.units_code')
             ->where('s.status', self::STATUS_ACTIVE)
-            ->where('c.duration_id', $durationId)
+            ->whereIn('c.duration_id', $durationIds)
             ->where('s.created_at <=', date('Y-m-d H:i:s', strtotime("-{$minAgeDays} days")));
 
         // Role-based access control (Role 3 = Admin sees all units)
@@ -941,10 +943,10 @@ class SpecimenController extends BaseController
         }
 
         $eligibleDays = $days - 1;
-        $durationMap  = [7 => 1, 14 => 2, 21 => 3];
+        $durationMap  = [7 => [1], 14 => [2, 4], 21 => [3]];
 
-        $durationId = $durationMap[$days] ?? null;
-        if (!$durationId) {
+        $durationIds = $durationMap[$days] ?? null;
+        if (!$durationIds) {
             return redirect()->back()->with('error', 'Invalid duration.');
         }
 
@@ -956,10 +958,10 @@ class SpecimenController extends BaseController
         $model->where('status', self::STATUS_ACTIVE)
             ->where('created_at <=', date("Y-m-d H:i:s", strtotime("-{$eligibleDays} days")))
             ->where('request_to_dispose_at', null)
-            ->whereIn('container_id', function ($sub) use ($durationId) {
+            ->whereIn('container_id', function ($sub) use ($durationIds) {
                 $sub->select('container_id')
                     ->from('containers')
-                    ->where('duration_id', $durationId);
+                    ->whereIn('duration_id', $durationIds);
             })
             ->set([
                 'request_to_dispose_at' => date('Y-m-d H:i:s'),
@@ -1081,7 +1083,7 @@ class SpecimenController extends BaseController
 
         $specimens = $builder->orderBy('s.created_at', 'DESC')->get()->getResultArray();
 
-        $thresholds = [1 => 6, 2 => 13, 3 => 20];
+        $thresholds = [1 => 6, 2 => 13, 3 => 20, 4 => 13];
         $readyToDispose = [];
         $today = new \DateTime();
 

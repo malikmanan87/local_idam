@@ -179,7 +179,7 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $durations = [1 => 'Chiller', 2 => 'Freezer 14 days', 3 => 'Freezer 21 days'];
+                                    $durations = [1 => 'Chiller', 2 => 'Freezer 14 days', 3 => 'Freezer 21 days', 4 => 'Chiller 14 days'];
                                     $days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                                     foreach ($containers as $c):
                                     ?>
@@ -377,7 +377,8 @@
             const durationOptions = [
                 { val: 1, label: 'Chiller (7 days)' },
                 { val: 2, label: 'Freezer (14 days)' },
-                { val: 3, label: 'Freezer (21 days)' }
+                { val: 3, label: 'Freezer (21 days)' },
+                { val: 4, label: 'Chiller (14 days)' }
             ];
 
             Swal.fire({
@@ -567,6 +568,7 @@
                             <option value="1">Chiller (7 days)</option>
                             <option value="2">Freezer (14 days)</option>
                             <option value="3">Freezer (21 days)</option>
+                            <option value="4">Chiller (14 days)</option>
                         </select>
 
                         <label class="form-label small fw-bold">System Device Type Classification</label>
@@ -593,7 +595,7 @@
                     // ✔️ Kekalkan logik auto-select gred peranti pintar sahaja tanpa mengganggu kotak teks tajuk
                     durationSelect.addEventListener('change', () => {
                         const d = parseInt(durationSelect.value);
-                        if (d === 1) {
+                        if (d === 1 || d === 4) {
                             typeSelect.value = 'Chiller';
                             typeSelect.querySelector('option[value="Chiller"]').disabled = false;
                             typeSelect.querySelector('option[value="Freezer"]').disabled = true;
@@ -666,6 +668,7 @@
                             <option value="1" ${durationId === 1 ? 'selected' : ''}>Chiller (7 days)</option>
                             <option value="2" ${durationId === 2 ? 'selected' : ''}>Freezer (14 days)</option>
                             <option value="3" ${durationId === 3 ? 'selected' : ''}>Freezer (21 days)</option>
+                            <option value="4" ${durationId === 4 ? 'selected' : ''}>Chiller (14 days)</option>
                         </select>
 
                         <label class="form-label small fw-bold">System Device Type Classification</label>
@@ -698,7 +701,7 @@
 
                     const syncType = () => {
                         const d = parseInt(durationSelect.value);
-                        if (d === 1) {
+                        if (d === 1 || d === 4) {
                             typeSelect.value = 'Chiller';
                             typeSelect.querySelector('option[value="Chiller"]').disabled = false;
                             typeSelect.querySelector('option[value="Freezer"]').disabled = true;
@@ -772,6 +775,7 @@
                             <option value="1">Chiller (7 days)</option>
                             <option value="2">Freezer (14 days)</option>
                             <option value="3">Freezer (21 days)</option>
+                            <option value="4">Chiller (14 days)</option>
                         </select>
                         <label class="form-label small fw-bold">Unique Container Integer Numeric Value</label>
                         <input id="sw_container_number" type="number" class="form-control mb-1" placeholder="e.g. 5" min="1">

@@ -208,7 +208,8 @@ if ($storagesCount == 0) {
         ['HEM', 1, 'Chiller', 'Chiller 1 - Hematology', 1, 'Primary 7-Day Chiller Storage'],
         ['HEM', 2, 'Freezer', 'Freezer 1 - Hematology (14D)', 1, '14-Day Deep Freezer'],
         ['BIO', 1, 'Chiller', 'Chiller 1 - Biochemistry', 1, 'Primary 7-Day Biochemistry Chiller'],
-        ['BIO', 3, 'Freezer', 'Freezer 1 - Biochemistry (21D)', 1, '21-Day Long Term Storage']
+        ['BIO', 3, 'Freezer', 'Freezer 1 - Biochemistry (21D)', 1, '21-Day Long Term Storage'],
+        ['BIO', 4, 'Chiller', 'Chiller B - Immunoassay (14D)', 1, '14-Day Immunoassay Chiller Storage']
     ];
 
     $stmt = $mysqli->prepare("INSERT INTO `storages` (`units_id`, `units_code`, `duration_id`, `storage_type`, `storage_name`, `status`, `remark`, `created_by`) VALUES (?, ?, ?, ?, ?, ?, ?, 'system')");

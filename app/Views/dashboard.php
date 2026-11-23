@@ -146,7 +146,8 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
     const readyDisposeData = [
         <?= (int)($readyDispose[1] ?? 0) ?>,
         <?= (int)($readyDispose[2] ?? 0) ?>,
-        <?= (int)($readyDispose[3] ?? 0) ?>
+        <?= (int)($readyDispose[3] ?? 0) ?>,
+        <?= (int)($readyDispose[4] ?? 0) ?>
     ];
 
     const totalReadyDispose = readyDisposeData.reduce((a, b) => a + b, 0);
@@ -164,7 +165,7 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             text: 'Ready to Dispose Specimens'
         },
         xAxis: {
-            categories: ['7 Days', '14 Days', '21 Days']
+            categories: ['7D Chiller', '14D Freezer', '21D Freezer', '14D Chiller']
         },
         yAxis: {
             title: {
@@ -184,7 +185,7 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             },
             column: {
                 colorByPoint: true,
-                colors: ['#007bff', '#ffc107', '#dc3545'],
+                colors: ['#007bff', '#ffc107', '#dc3545', '#00bcd4'],
                 shadow: true
             }
         },
@@ -237,7 +238,7 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             text: 'Specimens by Duration (<?= (int)($totalSpecimens ?? 0) ?>)'
         },
         xAxis: {
-            categories: ['7 Days', '14 Days', '21 Days']
+            categories: ['7D Chiller', '14D Freezer', '21D Freezer', '14D Chiller']
         },
         yAxis: {
             title: {
@@ -249,10 +250,11 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             data: [
                 <?= (int)($countsByDuration[1] ?? 0) ?>,
                 <?= (int)($countsByDuration[2] ?? 0) ?>,
-                <?= (int)($countsByDuration[3] ?? 0) ?>
+                <?= (int)($countsByDuration[3] ?? 0) ?>,
+                <?= (int)($countsByDuration[4] ?? 0) ?>
             ],
             colorByPoint: true,
-            colors: ['#007bff', '#ffc107', '#dc3545']
+            colors: ['#007bff', '#ffc107', '#dc3545', '#00bcd4']
         }],
         accessibility: {
             enabled: false
@@ -398,7 +400,8 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                     const durations = {
                         1: '7-Day Retention Chiller',
                         2: '14-Day Retention Freezer',
-                        3: '21-Day Retention Freezer'
+                        3: '21-Day Retention Freezer',
+                        4: '14-Day Retention Chiller'
                     };
 
                     let hasSpecimens = false;
