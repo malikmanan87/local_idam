@@ -1044,6 +1044,165 @@ class SpecimenController extends BaseController
         }
     }
 
+    /**
+     * PROCESS BULK BATCH DISPOSAL OF ENTIRE QUEUE VIA AJAX POST (SET STATUS = 2)
+     * For Role 2 (SuperUser) and Role 3 (Admin).
+     * Disposes ALL eligible active specimens in this retention queue matching the user's unit scope across all pages.
+     */
+    public function disposeAllQueueAjax()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Direct script access validation failed.']);
+        }
+
+        $role = (int)(session()->get('role') ?? 0);
+        if (!in_array($role, [2, 3], true)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Unauthorized access. Only Superusers and Admins can perform bulk queue disposal.',
+                'csrf_token' => csrf_token(),
+                'csrf_hash'  => csrf_hash()
+            ]);
+        }
+
+        $days = (int)($this->request->getPost('days') ?? 0);
+        $durationMap  = [7 => [1], 14 => [2, 4], 21 => [3]];
+        $thresholdMap = [7 => 6, 14 => 13, 21 => 20];
+
+        $durationIds = $durationMap[$days] ?? null;
+        $minAgeDays  = $thresholdMap[$days] ?? null;
+
+        if (!$durationIds || $minAgeDays === null) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid queue duration parameter.',
+                'csrf_token' => csrf_token(),
+                'csrf_hash'  => csrf_hash()
+            ]);
+        }
+
+        // Session role & unit filtering
+        $rawSessionUnits = session()->get('unit_id') ?? [];
+        if (is_string($rawSessionUnits)) {
+            $sessionUnitIds = explode(',', $rawSessionUnits);
+        } elseif (is_numeric($rawSessionUnits)) {
+            $sessionUnitIds = [(int)$rawSessionUnits];
+        } else {
+            $sessionUnitIds = (array)$rawSessionUnits;
+        }
+        $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
+
+        $db = \Config\Database::connect();
+        $db->transBegin();
+
+        try {
+            $currentUserId = session()->get('user_email') ?? session()->get('email') ?? 'system';
+            $currentDateTime = date('Y-m-d H:i:s');
+            $cutoffDate = date('Y-m-d H:i:s', strtotime("-{$minAgeDays} days"));
+
+            // 1. Identify container IDs belonging to the allowed unit scope and duration
+            $containersBuilder = $db->table('containers c')
+                ->select('c.container_id')
+                ->join('storages st', 'c.storage_id = st.storage_id')
+                ->join('units u', 'st.units_code = u.units_code')
+                ->whereIn('c.duration_id', $durationIds);
+
+            if ($role !== 3) {
+                if (!empty($sessionUnitIds)) {
+                    $containersBuilder->whereIn('u.units_id', $sessionUnitIds);
+                } else {
+                    $containersBuilder->where('u.units_id', -1);
+                }
+            }
+
+            $allowedContainers = $containersBuilder->get()->getResultArray();
+            $containerIds = array_column($allowedContainers, 'container_id');
+
+            if (empty($containerIds)) {
+                $db->transRollback();
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'No matching containers found for this queue within your unit scope.',
+                    'csrf_token' => csrf_token(),
+                    'csrf_hash'  => csrf_hash()
+                ]);
+            }
+
+            // 2. Query eligible active specimens in this queue
+            $eligibleSpecimens = $db->table('specimens')
+                ->select('specimens_id, specimens_code, request_to_dispose_at')
+                ->where('status', self::STATUS_ACTIVE)
+                ->where('created_at <=', $cutoffDate)
+                ->whereIn('container_id', $containerIds)
+                ->get()
+                ->getResultArray();
+
+            $totalEligible = count($eligibleSpecimens);
+
+            if ($totalEligible === 0) {
+                $db->transRollback();
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'No eligible active specimens found in this queue for disposal.',
+                    'csrf_token' => csrf_token(),
+                    'csrf_hash'  => csrf_hash()
+                ]);
+            }
+
+            $specimenIds = array_column($eligibleSpecimens, 'specimens_id');
+
+            // 3. Batch update status to 2 (Disposed), fill disposed_at & disposed_by
+            $chunkSize = 500;
+            foreach (array_chunk($specimenIds, $chunkSize) as $chunk) {
+                // Populate request_to_dispose_at for unrequested items to ensure full audit logs
+                $db->table('specimens')
+                    ->whereIn('specimens_id', $chunk)
+                    ->where('request_to_dispose_at', null)
+                    ->update([
+                        'request_to_dispose_at' => $currentDateTime,
+                        'request_to_dispose_by' => $currentUserId,
+                        'remark'                => 'Aged Sample',
+                    ]);
+
+                // Update status to 2 (Disposed)
+                $db->table('specimens')
+                    ->whereIn('specimens_id', $chunk)
+                    ->update([
+                        'status'      => 2,
+                        'disposed_at' => $currentDateTime,
+                        'disposed_by' => $currentUserId,
+                    ]);
+            }
+
+            if ($db->transStatus() === false) {
+                $db->transRollback();
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Database layer transactional lock error encountered during bulk queue disposal.',
+                    'csrf_token' => csrf_token(),
+                    'csrf_hash'  => csrf_hash()
+                ]);
+            }
+
+            $db->transCommit();
+
+            return $this->response->setJSON([
+                'success'    => true,
+                'message'    => "Successfully cleared and disposed all {$totalEligible} specimen asset(s) in this {$days}-day queue safely.",
+                'csrf_token' => csrf_token(),
+                'csrf_hash'  => csrf_hash()
+            ]);
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'A critical backend exception system error occurred: ' . $e->getMessage(),
+                'csrf_token' => csrf_token(),
+                'csrf_hash'  => csrf_hash()
+            ]);
+        }
+    }
+
     // -----------------------------
     // Dashboard Status Metrics Lookup
     // -----------------------------

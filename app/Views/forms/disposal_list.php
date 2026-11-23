@@ -55,9 +55,16 @@
                                         <i class="fa-solid fa-square-minus me-1"></i> Untick All
                                     </button>
 
-                                    <button type="button" class="btn btn-sm btn-danger dispose-selected-btn"
+                                    <button type="button" class="btn btn-sm btn-outline-danger dispose-selected-btn"
                                         data-table="#<?= esc($tableId) ?>">
                                         <i class="fa-solid fa-dumpster me-1"></i> Dispose Selected
+                                    </button>
+
+                                    <button type="button" class="btn btn-sm btn-danger dispose-all-queue-btn"
+                                        data-table="#<?= esc($tableId) ?>"
+                                        data-days="<?= $days ?>"
+                                        data-label="<?= esc($label) ?>">
+                                        <i class="fa-solid fa-dumpster-fire me-1"></i> Dispose All in Queue
                                     </button>
                                 <?php endif; ?>
                             </div>
@@ -298,6 +305,89 @@
                         },
                         error: function() {
                             Swal.fire('Network Fault', 'Server data sync dropped out during command validation. Token security synchronized.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+        // =========================================================================
+        // 2B. DISPOSE ALL IN QUEUE — Bulk destructive clearance across ALL pages
+        // =========================================================================
+        $(document).on('click', '.dispose-all-queue-btn', function() {
+            var btn           = $(this);
+            var tableSelector = btn.data('table');
+            var days          = btn.data('days');
+            var label         = btn.data('label') || (days + '-day Queue');
+            var tableObject   = $(tableSelector).DataTable();
+            var totalRecords  = tableObject.page.info().recordsTotal;
+
+            if (totalRecords === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Queue is Empty',
+                    text: 'There are no specimens available for disposal in this ' + label + '.'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Dispose ALL in ' + label + '?',
+                html: `
+                    <div class="text-start">
+                        <p class="text-secondary mb-2">
+                            Are you sure you want to permanently dispose <b>ALL ${totalRecords.toLocaleString()} specimen(s)</b> across all pages in this queue?
+                        </p>
+                        <div class="alert alert-danger py-2 small mb-0">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                            <strong>Warning:</strong> This bulk action is destructive and non-reversible. All active specimens reaching maturity in this queue within your unit scope will be marked as Disposed.
+                        </div>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fa-solid fa-dumpster-fire me-1"></i> Yes, Dispose All (' + totalRecords.toLocaleString() + ')',
+                cancelButtonText: 'Cancel'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    var postPayload = { days: days };
+                    postPayload[currentCsrfTokenName] = currentCsrfHashValue;
+
+                    Swal.fire({
+                        title: 'Disposing Entire Queue...',
+                        text: 'Processing destructive clearance for ' + totalRecords.toLocaleString() + ' specimen(s). Please wait...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: '<?= base_url("specimen/disposeAllQueueAjax") ?>',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: postPayload,
+                        success: function(res) {
+                            if (res.csrf_token) currentCsrfTokenName = res.csrf_token;
+                            if (res.csrf_hash)  currentCsrfHashValue  = res.csrf_hash;
+
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Queue Cleared',
+                                    text: res.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+
+                                // Reload DataTable to refresh list
+                                tableObject.ajax.reload(null, false);
+                            } else {
+                                Swal.fire('Execution Refused', res.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Network Fault', 'Server data sync dropped out during bulk queue disposal execution.', 'error');
                         }
                     });
                 }

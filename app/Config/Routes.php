@@ -74,6 +74,7 @@ $routes->group('specimen', ['filter' => 'role:1,2,3'], function ($routes) {
 $routes->group('specimen', ['filter' => 'role:1,2,3'], function ($routes) {
     $routes->get('disposal', 'SpecimenController::disposal');
     $routes->post('disposeSelectedAjax', 'SpecimenController::disposeSelectedAjax');
+    $routes->post('disposeAllQueueAjax', 'SpecimenController::disposeAllQueueAjax');
     $routes->post('disposalAjax', 'SpecimenController::disposalAjax');
     $routes->get('requestDisposeAll', 'SpecimenController::requestDisposeAll');
     $routes->get('disposal/details', 'SpecimenController::getReadyToDispose');
