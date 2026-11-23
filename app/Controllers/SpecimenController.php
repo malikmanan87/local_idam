@@ -660,12 +660,18 @@ class SpecimenController extends BaseController
                     // Umur: umur bertambah jika tarikh dicipta lebih awal
                     $colDir = $colDir === 'DESC' ? 'ASC' : 'DESC';
                     $baseBuilder->orderBy('s.created_at', $colDir);
+                } elseif ($colIdx === 9) {
+                    // Susunan Khas Status: Active (1) -> Inactive (0) -> Disposed (2)
+                    $statusOrderExpr = "CASE s.status WHEN 1 THEN 1 WHEN 0 THEN 2 WHEN 2 THEN 3 ELSE 4 END";
+                    $baseBuilder->orderBy($statusOrderExpr, $colDir, false);
+                    $baseBuilder->orderBy('s.created_at', 'DESC');
                 } elseif (isset($columnsMap[$colIdx])) {
                     $baseBuilder->orderBy($columnsMap[$colIdx], $colDir);
                 }
             }
         } else {
-            $baseBuilder->orderBy('s.status', 'ASC')->orderBy('s.created_at', 'DESC');
+            $baseBuilder->orderBy("CASE s.status WHEN 1 THEN 1 WHEN 0 THEN 2 WHEN 2 THEN 3 ELSE 4 END", 'ASC', false)
+                ->orderBy('s.created_at', 'DESC');
         }
 
         // Paginasi (Pagination)
