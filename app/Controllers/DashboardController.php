@@ -47,7 +47,7 @@ class DashboardController extends BaseController
         $applyUnitFilter($durationQuery);
         $countsByDuration = $durationQuery->findAll();
 
-        $durationMap = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+        $durationMap = [1 => 0, 4 => 0, 2 => 0, 3 => 0];
         foreach ($countsByDuration as $row) {
             $durationMap[$row['duration_id']] = (int) $row['total'];
         }
@@ -117,14 +117,14 @@ class DashboardController extends BaseController
             ->join('containers c', 'specimens.container_id = c.container_id')
             ->where('specimens.status', 1)
             ->where("( (c.duration_id = 1 AND specimens.created_at <= '" . date('Y-m-d H:i:s', strtotime('-6 days')) . "') 
+                    OR (c.duration_id = 4 AND specimens.created_at <= '" . date('Y-m-d H:i:s', strtotime('-13 days')) . "')
                     OR (c.duration_id = 2 AND specimens.created_at <= '" . date('Y-m-d H:i:s', strtotime('-13 days')) . "')
-                    OR (c.duration_id = 3 AND specimens.created_at <= '" . date('Y-m-d H:i:s', strtotime('-20 days')) . "')
-                    OR (c.duration_id = 4 AND specimens.created_at <= '" . date('Y-m-d H:i:s', strtotime('-13 days')) . "') )")
+                    OR (c.duration_id = 3 AND specimens.created_at <= '" . date('Y-m-d H:i:s', strtotime('-20 days')) . "') )")
             ->groupBy('c.duration_id');
         $applyUnitFilter($readyQuery);
         $readyDisposeRaw = $readyQuery->findAll();
 
-        $readyDispose = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+        $readyDispose = [1 => 0, 4 => 0, 2 => 0, 3 => 0];
         foreach ($readyDisposeRaw as $row) {
             $readyDispose[$row['duration_id']] = (int) $row['total'];
         }

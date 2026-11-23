@@ -9,7 +9,7 @@
 
 | No. | Tajuk Permintaan | Modul Terlibat | Tahap Impak |
 | :--- | :--- | :--- | :--- |
-| **CR-01** | Penambahan Kategori Storan: **Chiller (14 days)** | Maintenance, Dashboard, Specimen, Disposal, Reports | Sederhana (Backend & Frontend) |
+| **CR-01** | Penambahan Kategori Storan: **Chiller (14 days)** | Maintenance, Dashboard, Specimen, Disposal, Reports | Selesai (Susunan Piawai: Chiller 7D, Chiller 14D, Freezer 14D, Freezer 21D) |
 | **CR-02** | Butang Pilihan Saiz Grid Slot: **100, 70, atau 50 Slots** pada New Entry | New Entry (`bulk_registration`), Controller (`saveBulk`), All List | Ringan / Mudah Diasingkan |
 
 ---

@@ -179,7 +179,7 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $durations = [1 => 'Chiller', 2 => 'Freezer 14 days', 3 => 'Freezer 21 days', 4 => 'Chiller 14 days'];
+                                    $durations = [1 => 'Chiller (7 days)', 4 => 'Chiller (14 days)', 2 => 'Freezer (14 days)', 3 => 'Freezer (21 days)'];
                                     $days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                                     foreach ($containers as $c):
                                     ?>
@@ -376,9 +376,9 @@
 
             const durationOptions = [
                 { val: 1, label: 'Chiller (7 days)' },
+                { val: 4, label: 'Chiller (14 days)' },
                 { val: 2, label: 'Freezer (14 days)' },
-                { val: 3, label: 'Freezer (21 days)' },
-                { val: 4, label: 'Chiller (14 days)' }
+                { val: 3, label: 'Freezer (21 days)' }
             ];
 
             Swal.fire({
@@ -566,9 +566,9 @@
                         <select id="sw_duration_id" class="form-select mb-2">
                             <option value="">-- Select Duration --</option>
                             <option value="1">Chiller (7 days)</option>
+                            <option value="4">Chiller (14 days)</option>
                             <option value="2">Freezer (14 days)</option>
                             <option value="3">Freezer (21 days)</option>
-                            <option value="4">Chiller (14 days)</option>
                         </select>
 
                         <label class="form-label small fw-bold">System Device Type Classification</label>
@@ -666,9 +666,9 @@
                         <label class="form-label small fw-bold">Retention Lifespan Profile Duration</label>
                         <select id="sw_edit_storage_duration_id" class="form-select mb-2">
                             <option value="1" ${durationId === 1 ? 'selected' : ''}>Chiller (7 days)</option>
+                            <option value="4" ${durationId === 4 ? 'selected' : ''}>Chiller (14 days)</option>
                             <option value="2" ${durationId === 2 ? 'selected' : ''}>Freezer (14 days)</option>
                             <option value="3" ${durationId === 3 ? 'selected' : ''}>Freezer (21 days)</option>
-                            <option value="4" ${durationId === 4 ? 'selected' : ''}>Chiller (14 days)</option>
                         </select>
 
                         <label class="form-label small fw-bold">System Device Type Classification</label>
@@ -773,9 +773,9 @@
                         <select id="sw_duration_id" class="form-select mb-2">
                             <option value="">-- Selection Duration --</option>
                             <option value="1">Chiller (7 days)</option>
+                            <option value="4">Chiller (14 days)</option>
                             <option value="2">Freezer (14 days)</option>
                             <option value="3">Freezer (21 days)</option>
-                            <option value="4">Chiller (14 days)</option>
                         </select>
                         <label class="form-label small fw-bold">Unique Container Integer Numeric Value</label>
                         <input id="sw_container_number" type="number" class="form-control mb-1" placeholder="e.g. 5" min="1">

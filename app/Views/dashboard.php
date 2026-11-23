@@ -3,9 +3,10 @@
 
 <?php
 $tubeColors = [
-    1 => '#1E90FF', // 7-day
-    2 => '#FFD700', // 14-day
-    3 => '#FF4500', // 21-day
+    1 => '#1E90FF', // Chiller 7-day
+    4 => '#00bcd4', // Chiller 14-day
+    2 => '#FFD700', // Freezer 14-day
+    3 => '#FF4500', // Freezer 21-day
 ];
 $defaultColor = '#e9ecef';
 $statusMap = [
@@ -145,9 +146,9 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
     ================================ */
     const readyDisposeData = [
         <?= (int)($readyDispose[1] ?? 0) ?>,
+        <?= (int)($readyDispose[4] ?? 0) ?>,
         <?= (int)($readyDispose[2] ?? 0) ?>,
-        <?= (int)($readyDispose[3] ?? 0) ?>,
-        <?= (int)($readyDispose[4] ?? 0) ?>
+        <?= (int)($readyDispose[3] ?? 0) ?>
     ];
 
     const totalReadyDispose = readyDisposeData.reduce((a, b) => a + b, 0);
@@ -165,7 +166,7 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             text: 'Ready to Dispose Specimens'
         },
         xAxis: {
-            categories: ['7D Chiller', '14D Freezer', '21D Freezer', '14D Chiller']
+            categories: ['7D Chiller', '14D Chiller', '14D Freezer', '21D Freezer']
         },
         yAxis: {
             title: {
@@ -185,7 +186,7 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             },
             column: {
                 colorByPoint: true,
-                colors: ['#007bff', '#ffc107', '#dc3545', '#00bcd4'],
+                colors: ['#007bff', '#00bcd4', '#ffc107', '#dc3545'],
                 shadow: true
             }
         },
@@ -238,7 +239,7 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             text: 'Specimens by Duration (<?= (int)($totalSpecimens ?? 0) ?>)'
         },
         xAxis: {
-            categories: ['7D Chiller', '14D Freezer', '21D Freezer', '14D Chiller']
+            categories: ['7D Chiller', '14D Chiller', '14D Freezer', '21D Freezer']
         },
         yAxis: {
             title: {
@@ -249,12 +250,12 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             name: 'Duration',
             data: [
                 <?= (int)($countsByDuration[1] ?? 0) ?>,
+                <?= (int)($countsByDuration[4] ?? 0) ?>,
                 <?= (int)($countsByDuration[2] ?? 0) ?>,
-                <?= (int)($countsByDuration[3] ?? 0) ?>,
-                <?= (int)($countsByDuration[4] ?? 0) ?>
+                <?= (int)($countsByDuration[3] ?? 0) ?>
             ],
             colorByPoint: true,
-            colors: ['#007bff', '#ffc107', '#dc3545', '#00bcd4']
+            colors: ['#007bff', '#00bcd4', '#ffc107', '#dc3545']
         }],
         accessibility: {
             enabled: false
@@ -399,9 +400,9 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                     let html = '<div class="px-1 text-start">';
                     const durations = {
                         1: '7-Day Retention Chiller',
+                        4: '14-Day Retention Chiller',
                         2: '14-Day Retention Freezer',
-                        3: '21-Day Retention Freezer',
-                        4: '14-Day Retention Chiller'
+                        3: '21-Day Retention Freezer'
                     };
 
                     let hasSpecimens = false;
@@ -439,8 +440,10 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                                     </thead>
                                     <tbody>`;
 
-                        // Render table rows sequentially from sorted lookup matrices map structures
-                        for (const durationId in aggregatedSummary) {
+                        // Render table rows sequentially: Chiller 7D, Chiller 14D, Freezer 14D, Freezer 21D
+                        const durationOrder = [1, 4, 2, 3];
+                        for (const durationId of durationOrder) {
+                            if (!aggregatedSummary[durationId]) continue;
                             for (const unitName in aggregatedSummary[durationId]) {
                                 const count = aggregatedSummary[durationId][unitName];
                                 html += `

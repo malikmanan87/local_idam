@@ -428,10 +428,10 @@ class SpecimenController extends BaseController
         ];
 
         $tubeColors = [
-            1 => '#1E90FF',
-            2 => '#FFD700',
-            3 => '#FF4500',
-            4 => '#00bcd4',
+            1 => '#1E90FF', // Chiller 7-day
+            4 => '#00bcd4', // Chiller 14-day
+            2 => '#FFD700', // Freezer 14-day
+            3 => '#FF4500', // Freezer 21-day
         ];
 
         $defaultColor = '#e9ecef';
@@ -565,10 +565,10 @@ class SpecimenController extends BaseController
         ];
 
         $tubeColors = [
-            1 => '#1E90FF', // 7-day
-            2 => '#FFD700', // 14-day
-            3 => '#FF4500', // 21-day
-            4 => '#00bcd4', // 14-day Chiller
+            1 => '#1E90FF', // Chiller 7-day
+            4 => '#00bcd4', // Chiller 14-day
+            2 => '#FFD700', // Freezer 14-day
+            3 => '#FF4500', // Freezer 21-day
         ];
         $defaultColor = '#e9ecef';
 
@@ -1083,7 +1083,7 @@ class SpecimenController extends BaseController
 
         $specimens = $builder->orderBy('s.created_at', 'DESC')->get()->getResultArray();
 
-        $thresholds = [1 => 6, 2 => 13, 3 => 20, 4 => 13];
+        $thresholds = [1 => 6, 4 => 13, 2 => 13, 3 => 20];
         $readyToDispose = [];
         $today = new \DateTime();
 

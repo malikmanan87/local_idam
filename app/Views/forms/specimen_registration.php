@@ -3,9 +3,10 @@
 
 <?php
 $tubeColors = [
-    1 => '#1E90FF', // 7-day
-    2 => '#FFD700', // 14-day
-    3 => '#FF4500', // 21-day
+    1 => '#1E90FF', // Chiller 7-day
+    4 => '#00bcd4', // Chiller 14-day
+    2 => '#FFD700', // Freezer 14-day
+    3 => '#FF4500', // Freezer 21-day
 ];
 $defaultColor = '#e9ecef';
 

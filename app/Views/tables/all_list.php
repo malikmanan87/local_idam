@@ -4,10 +4,10 @@
 <?php
 // Tube colors & durations
 $tubeColors = [
-    1 => '#1E90FF', // 7-day
-    2 => '#FFD700', // 14-day
-    3 => '#FF4500', // 21-day
-    4 => '#00bcd4', // 14-day Chiller
+    1 => '#1E90FF', // Chiller 7-day
+    4 => '#00bcd4', // Chiller 14-day
+    2 => '#FFD700', // Freezer 14-day
+    3 => '#FF4500', // Freezer 21-day
 ];
 $defaultColor = '#e9ecef';
 
@@ -95,10 +95,10 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             <?php endif; ?>
 
             <div class="mb-3">
-                <span class="badge" style="background:#1E90FF">7-day</span>
+                <span class="badge" style="background:#1E90FF">7-day (Chiller)</span>
+                <span class="badge" style="background:#00bcd4;color:#000">14-day (Chiller)</span>
                 <span class="badge" style="background:#FFD700;color:#000">14-day (Freezer)</span>
                 <span class="badge" style="background:#FF4500">21-day (Freezer)</span>
-                <span class="badge" style="background:#00bcd4;color:#000">14-day (Chiller)</span>
                 <span class="badge bg-secondary">Empty</span>
             </div>
 
@@ -306,20 +306,20 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                 
                 <div class="d-flex flex-column gap-2 mb-3">
                     <div class="d-flex align-items-center p-2 rounded bg-light border-start border-primary border-3">
-                        <span class="badge me-2 text-white" style="background:#1E90FF; width: 65px;">7-Day</span>
-                        <span class="small text-muted">Blue slots match active short-term storage profiles.</span>
-                    </div>
-                    <div class="d-flex align-items-center p-2 rounded bg-light border-start border-warning border-3">
-                        <span class="badge me-2 text-dark" style="background:#FFD700; width: 65px;">14-Day</span>
-                        <span class="small text-muted">Yellow slots represent intermediate logging timelines.</span>
-                    </div>
-                    <div class="d-flex align-items-center p-2 rounded bg-light border-start border-danger border-3">
-                        <span class="badge me-2 text-white" style="background:#FF4500; width: 65px;">21-Day</span>
-                        <span class="small text-muted">Red slots mark extended specimen tracking hold cycles.</span>
+                        <span class="badge me-2 text-white" style="background:#1E90FF; width: 85px;">7-Day Chill</span>
+                        <span class="small text-muted">Blue slots represent 7-day chiller retention cycles.</span>
                     </div>
                     <div class="d-flex align-items-center p-2 rounded bg-light border-start border-info border-3">
-                        <span class="badge me-2 text-dark" style="background:#00bcd4; width: 65px;">14D Chill</span>
+                        <span class="badge me-2 text-dark" style="background:#00bcd4; width: 85px;">14-Day Chill</span>
                         <span class="small text-muted">Cyan slots represent 14-day chiller retention cycles.</span>
+                    </div>
+                    <div class="d-flex align-items-center p-2 rounded bg-light border-start border-warning border-3">
+                        <span class="badge me-2 text-dark" style="background:#FFD700; width: 85px;">14-Day Frz</span>
+                        <span class="small text-muted">Yellow slots represent 14-day freezer retention cycles.</span>
+                    </div>
+                    <div class="d-flex align-items-center p-2 rounded bg-light border-start border-danger border-3">
+                        <span class="badge me-2 text-white" style="background:#FF4500; width: 85px;">21-Day Frz</span>
+                        <span class="small text-muted">Red slots mark extended 21-day freezer hold cycles.</span>
                     </div>
                 </div>
 
