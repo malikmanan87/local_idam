@@ -6,143 +6,207 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4 text-white">User Roles Management</h1>
 
-            <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-user-plus me-1"></i> New Users</div>
-                <div class="card-body table-responsive">
-                    <table id="newUsersTable" class="table table-striped table-bordered align-middle">
-                        <thead>
-                            <tr class="text-center">
-                                <th>#</th>
-                                <th>Email</th>
-                                <th>Unit Requested</th>
-                                <th>Reason to Access</th>
-                                <th>Registered</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($newUsers as $i => $user): ?>
-                                <tr data-id="<?= $user['user_id'] ?>">
-                                    <td class="text-center"><?= $i + 1 ?></td>
-                                    <td><?= esc($user['email']) ?></td>
-                                    <td class="text-center"><span class="badge bg-light text-dark border"><?= esc($user['units_name']) ?></span></td>
-                                    <td><?= esc($user['reason_to_access'] ?? '-') ?></td>
-                                    <td class="text-center"><?= date('Y-m-d H:i', strtotime($user['created_at'])) ?></td>
-                                    <td class="text-center">
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-success approve-btn" data-id="<?= $user['user_id'] ?>">Approve</button>
-                                            <button class="btn btn-outline-danger reject-btn" data-id="<?= $user['user_id'] ?>">Reject</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+            <style>
+                .card-header-tabs .nav-link {
+                    color: #495057;
+                    font-weight: 600;
+                    border-top-left-radius: 0.4rem;
+                    border-top-right-radius: 0.4rem;
+                    padding: 0.65rem 1.25rem;
+                    transition: all 0.2s ease-in-out;
+                }
+                .card-header-tabs .nav-link.active {
+                    color: #0d6efd !important;
+                    background-color: #fff;
+                    border-color: #dee2e6 #dee2e6 #fff;
+                    border-bottom: 2px solid #fff;
+                }
+                .card-header-tabs .nav-link:hover:not(.active) {
+                    color: #0d6efd;
+                    background-color: rgba(13, 110, 253, 0.05);
+                    border-color: #e9ecef #e9ecef #dee2e6;
+                }
+            </style>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
+                    <ul class="nav nav-tabs card-header-tabs" id="userManagementTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold" id="tab-new-btn" data-bs-toggle="tab" data-bs-target="#tab-new-users" type="button" role="tab" aria-controls="tab-new-users" aria-selected="true">
+                                <i class="fas fa-user-plus text-primary me-2"></i>New Users
+                                <?php if (count($newUsers) > 0): ?>
+                                    <span class="badge bg-danger rounded-pill ms-1"><?= count($newUsers) ?></span>
+                                <?php else: ?>
+                                    <span class="badge bg-light text-muted border rounded-pill ms-1">0</span>
+                                <?php endif; ?>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold" id="tab-active-btn" data-bs-toggle="tab" data-bs-target="#tab-active-users" type="button" role="tab" aria-controls="tab-active-users" aria-selected="false">
+                                <i class="fas fa-users-cog text-success me-2"></i>Active / Inactive Users
+                                <span class="badge bg-secondary rounded-pill ms-1"><?= count($activeUsers) ?></span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold" id="tab-rejected-btn" data-bs-toggle="tab" data-bs-target="#tab-rejected-users" type="button" role="tab" aria-controls="tab-rejected-users" aria-selected="false">
+                                <i class="fas fa-user-slash text-danger me-2"></i>Rejected Users
+                                <?php if (count($rejectedUsers) > 0): ?>
+                                    <span class="badge bg-secondary rounded-pill ms-1"><?= count($rejectedUsers) ?></span>
+                                <?php else: ?>
+                                    <span class="badge bg-light text-muted border rounded-pill ms-1">0</span>
+                                <?php endif; ?>
+                            </button>
+                        </li>
+                    </ul>
                 </div>
-            </div>
+                <div class="card-body p-4">
+                    <div class="tab-content" id="userManagementTabsContent">
+                        
+                        <!-- ========================================== -->
+                        <!-- TAB 1: NEW USERS                           -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade show active" id="tab-new-users" role="tabpanel" aria-labelledby="tab-new-btn">
+                            <div class="table-responsive">
+                                <table id="newUsersTable" class="table table-striped table-bordered align-middle w-100">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>#</th>
+                                            <th>Email</th>
+                                            <th>Unit Requested</th>
+                                            <th>Reason to Access</th>
+                                            <th>Registered</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($newUsers as $i => $user): ?>
+                                            <tr data-id="<?= $user['user_id'] ?>">
+                                                <td class="text-center"><?= $i + 1 ?></td>
+                                                <td><?= esc($user['email']) ?></td>
+                                                <td class="text-center"><span class="badge bg-light text-dark border"><?= esc($user['units_name']) ?></span></td>
+                                                <td><?= esc($user['reason_to_access'] ?? '-') ?></td>
+                                                <td class="text-center"><?= date('Y-m-d H:i', strtotime($user['created_at'])) ?></td>
+                                                <td class="text-center">
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-success approve-btn" data-id="<?= $user['user_id'] ?>">Approve</button>
+                                                        <button class="btn btn-outline-danger reject-btn" data-id="<?= $user['user_id'] ?>">Reject</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-            <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-users-cog me-1"></i> Active / Inactive Users</div>
-                <div class="card-body table-responsive">
-                    <table id="activeUsersTable" class="table table-striped table-bordered align-middle">
-                        <thead class="text-center">
-                            <tr>
-                                <th>#</th>
-                                <th>Email</th>
-                                <th>Authorized Laboratory Units</th>
-                                <th>Status</th>
-                                <th>Role</th>
-                                <th>Configuration</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($activeUsers as $i => $user): ?>
-                                <?php
-                                $roleId = (int)$user['role'];
-                                $rawUnitId = $user['unit_id'] ?? '';
+                        <!-- ========================================== -->
+                        <!-- TAB 2: ACTIVE / INACTIVE USERS             -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade" id="tab-active-users" role="tabpanel" aria-labelledby="tab-active-btn">
+                            <div class="table-responsive">
+                                <table id="activeUsersTable" class="table table-striped table-bordered align-middle w-100">
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Email</th>
+                                            <th>Authorized Laboratory Units</th>
+                                            <th>Status</th>
+                                            <th>Role</th>
+                                            <th>Configuration</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($activeUsers as $i => $user): ?>
+                                            <?php
+                                            $roleId = (int)$user['role'];
+                                            $rawUnitId = $user['unit_id'] ?? '';
 
-                                // Parse string senarai unit ID berciri koma (e.g., "1,2") ke dalam bentuk array
-                                $assignedUnitIds = array_filter(array_map('intval', array_map('trim', explode(',', $rawUnitId))), 'strlen');
+                                            // Parse string senarai unit ID berciri koma (e.g., "1,2") ke dalam bentuk array
+                                            $assignedUnitIds = array_filter(array_map('intval', array_map('trim', explode(',', $rawUnitId))), 'strlen');
 
-                                // Bina lencana (badges) bagi unit-unit yang dibenarkan
-                                $unitBadges = [];
-                                foreach ($allUnits as $unit) {
-                                    if (in_array((int)$unit['units_id'], $assignedUnitIds, true)) {
-                                        $unitBadges[] = '<span class="badge bg-light text-dark border me-1"><i class="fa-solid fa-microscope text-primary me-1"></i>' . esc($unit['units_code']) . '</span>';
-                                    }
-                                }
-                                ?>
-                                <tr data-id="<?= $user['user_id'] ?>">
-                                    <td class="text-center"><?= $i + 1 ?></td>
-                                    <td class="fw-semibold text-secondary"><?= esc($user['email']) ?></td>
-                                    <td>
-                                        <?php if ($roleId === 3): ?>
-                                            <span class="badge bg-dark px-2 py-1"><i class="fa-solid fa-circle-nodes me-1"></i> Global Root Clearance (All Units)</span>
-                                        <?php else: ?>
-                                            <?= !empty($unitBadges) ? implode('', $unitBadges) : '<span class="text-muted small italic">⚠️ No Unit Assigned</span>' ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-success status-btn <?= $user['status'] == 1 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-status="1">Active</button>
-                                            <button class="btn btn-outline-danger status-btn <?= $user['status'] == 2 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-status="2">Inactive</button>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-secondary role-btn <?= $roleId == 1 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-role="1">User</button>
-                                            <button class="btn btn-outline-secondary role-btn <?= $roleId == 2 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-role="2">SuperUser</button>
-                                            <button class="btn btn-outline-secondary role-btn <?= $roleId == 3 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-role="3">Admin</button>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button"
-                                            class="btn btn-sm btn-primary edit-units-btn px-2 py-1"
-                                            data-id="<?= $user['user_id'] ?>"
-                                            data-email="<?= esc($user['email']) ?>"
-                                            data-role="<?= $roleId ?>"
-                                            data-units="<?= esc($rawUnitId) ?>">
-                                            <i class="fa-solid fa-folder-tree me-1"></i> Units (+/-)
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                            // Bina lencana (badges) bagi unit-unit yang dibenarkan
+                                            $unitBadges = [];
+                                            foreach ($allUnits as $unit) {
+                                                if (in_array((int)$unit['units_id'], $assignedUnitIds, true)) {
+                                                    $unitBadges[] = '<span class="badge bg-light text-dark border me-1"><i class="fa-solid fa-microscope text-primary me-1"></i>' . esc($unit['units_code']) . '</span>';
+                                                }
+                                            }
+                                            ?>
+                                            <tr data-id="<?= $user['user_id'] ?>">
+                                                <td class="text-center"><?= $i + 1 ?></td>
+                                                <td class="fw-semibold text-secondary"><?= esc($user['email']) ?></td>
+                                                <td>
+                                                    <?php if ($roleId === 3): ?>
+                                                        <span class="badge bg-dark px-2 py-1"><i class="fa-solid fa-circle-nodes me-1"></i> Global Root Clearance (All Units)</span>
+                                                    <?php else: ?>
+                                                        <?= !empty($unitBadges) ? implode('', $unitBadges) : '<span class="text-muted small italic">⚠️ No Unit Assigned</span>' ?>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-success status-btn <?= $user['status'] == 1 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-status="1">Active</button>
+                                                        <button class="btn btn-outline-danger status-btn <?= $user['status'] == 2 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-status="2">Inactive</button>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-secondary role-btn <?= $roleId == 1 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-role="1">User</button>
+                                                        <button class="btn btn-outline-secondary role-btn <?= $roleId == 2 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-role="2">SuperUser</button>
+                                                        <button class="btn btn-outline-secondary role-btn <?= $roleId == 3 ? 'active' : '' ?>" data-id="<?= $user['user_id'] ?>" data-role="3">Admin</button>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-primary edit-units-btn px-2 py-1"
+                                                        data-id="<?= $user['user_id'] ?>"
+                                                        data-email="<?= esc($user['email']) ?>"
+                                                        data-role="<?= $roleId ?>"
+                                                        data-units="<?= esc($rawUnitId) ?>">
+                                                        <i class="fa-solid fa-folder-tree me-1"></i> Units (+/-)
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-            <div class="card mb-4">
-                <div class="card-header bg-danger text-white">
-                    <i class="fas fa-user-slash me-1"></i> Rejected Users
-                </div>
-                <div class="card-body table-responsive">
-                    <table id="rejectedUsersTable" class="table table-striped table-bordered align-middle">
-                        <thead>
-                            <tr class="text-center">
-                                <th>#</th>
-                                <th>Email</th>
-                                <th>Unit</th>
-                                <th>Rejected Remark</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($rejectedUsers as $i => $user): ?>
-                                <tr data-id="<?= $user['user_id'] ?>">
-                                    <td class="text-center"><?= $i + 1 ?></td>
-                                    <td><?= esc($user['email']) ?></td>
-                                    <td class="text-center"><span class="badge bg-light text-dark border"><?= esc($user['units_name']) ?></span></td>
-                                    <td class="remark-cell"><?= esc($user['remark'] ?? '-') ?></td>
-                                    <td class="text-center">
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-warning restore-btn" data-id="<?= $user['user_id'] ?>">Restore</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                        <!-- ========================================== -->
+                        <!-- TAB 3: REJECTED USERS                      -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade" id="tab-rejected-users" role="tabpanel" aria-labelledby="tab-rejected-btn">
+                            <div class="table-responsive">
+                                <table id="rejectedUsersTable" class="table table-striped table-bordered align-middle w-100">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>#</th>
+                                            <th>Email</th>
+                                            <th>Unit</th>
+                                            <th>Rejected Remark</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($rejectedUsers as $i => $user): ?>
+                                            <tr data-id="<?= $user['user_id'] ?>">
+                                                <td class="text-center"><?= $i + 1 ?></td>
+                                                <td><?= esc($user['email']) ?></td>
+                                                <td class="text-center"><span class="badge bg-light text-dark border"><?= esc($user['units_name']) ?></span></td>
+                                                <td class="remark-cell"><?= esc($user['remark'] ?? '-') ?></td>
+                                                <td class="text-center">
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-warning restore-btn" data-id="<?= $user['user_id'] ?>">Restore</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
@@ -202,10 +266,27 @@
 
 <script>
     $(function() {
+        // CSRF Token Variables
+        let csrfName = '<?= csrf_token() ?>';
+        let csrfHash = '<?= csrf_hash() ?>';
+
         // Initialize DataTables
         var table1 = $('#newUsersTable').DataTable({ responsive: true, autoWidth: false });
         var table2 = $('#activeUsersTable').DataTable({ responsive: true, autoWidth: false });
         var table3 = $('#rejectedUsersTable').DataTable({ responsive: true, autoWidth: false });
+
+        // Laraskan semula saiz ruangan DataTable apabila tab ditukar (elak header/lebar terhimpit)
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+            sessionStorage.setItem('active_user_management_tab', $(e.target).attr('data-bs-target'));
+            $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().responsive.recalc();
+        });
+
+        // Kekalkan tab yang aktif selepas reload (cth: selepas approve, reject, tukar role/status/unit)
+        const savedTab = sessionStorage.getItem('active_user_management_tab');
+        if (savedTab && $(`button[data-bs-target="${savedTab}"]`).length) {
+            var tabToActivate = new bootstrap.Tab(document.querySelector(`button[data-bs-target="${savedTab}"]`));
+            tabToActivate.show();
+        }
 
         // FIX UTAMA: Gunakan Event Delegation terus pada document body untuk memotong isu re-draw DataTables
         $(document).on('click', '.edit-units-btn', function(e) {
