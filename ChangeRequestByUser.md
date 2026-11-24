@@ -319,6 +319,16 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
     * Mengemaskini definisi lajur DataTables (`columnDefs`) bagi susunan tengah teks dan menyahaktifkan sorting pada lajur Action (indeks 7).
 * **Commit**: `b16e55e`
 
+### RBM-19: Pelaksanaan Tab Bersepadu (Pilihan 3) pada Halaman New Entry (`/specimen`)
+* **Tujuan**: Menyatukan borang pendaftaran pukal dan jadual sejarah pendaftaran ke dalam satu kad luar bersepadu dengan navigasi tab (*Tabbed Interface*) seperti di `/role` bagi menghapuskan keperluan *scrolling* ke bawah dan menjadikan skrin lebih kemas serta kompak.
+* **Tindakan**:
+  * Mengemaskini [bulk_registration.php](file:///c:/xampp/htdocs/idam/app/Views/forms/bulk_registration.php).
+  * Menyatukan struktur kepada satu kad luar `<div class="card mb-4 shadow-sm">` bersama `<ul class="nav nav-tabs card-header-tabs" id="bulkSpecimenTabs">`:
+    * **Tab 1: Registration Form** (`#tab-register-pane`) untuk pengisian dan imbasan kod spesimen secara fokus.
+    * **Tab 2: Workspace Registry History (Last 48 Hours)** (`#tab-history-pane`) lengkap dengan lencana jumlah rekod (`<span class="badge bg-secondary rounded-pill">`) untuk semakan dan pembatalan spesimen.
+  * Menambah skrip pendengar pertukaran tab DataTables (`shown.bs.tab`) dengan pengekalan status tab aktif melalui `sessionStorage.getItem('active_bulk_tab')` serta pelarasan semula kelebaran lajur secara automatik (`columns.adjust().responsive.recalc()`).
+* **Commit**: `75f789d`
+
 ---
 
 ## 2.3 Peraturan Tetap Operasi Pentadbir (Standing Deployment Rule)
