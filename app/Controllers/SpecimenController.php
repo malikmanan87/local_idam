@@ -588,6 +588,7 @@ class SpecimenController extends BaseController
         $length = (int)($request->getPost('length') ?? 10);
         $searchValue = trim($request->getPost('search')['value'] ?? '');
         $order = $request->getPost('order') ?? [];
+        $durationIdParam = $request->getPost('duration_id') ?? 'all';
 
         // Base query builder
         $baseBuilder = $db->table('specimens s')
@@ -596,6 +597,11 @@ class SpecimenController extends BaseController
             ->join('units u', 's.units_id = u.units_id', 'left')
             ->whereIn('s.status', [0, 1, 2])
             ->where('s.specimens_code !=', '');
+
+        // Penapisan Kategori / Tempoh Storan (Duration ID)
+        if ($durationIdParam !== 'all' && !empty($durationIdParam)) {
+            $baseBuilder->where('c.duration_id', (int)$durationIdParam);
+        }
 
         // SEKURITI SPESIMEN: Role 1 & 2 terhad kepada unit sendiri, Role 3 (Admin) semua
         if ($userRole !== 3) {
@@ -629,6 +635,21 @@ class SpecimenController extends BaseController
             }
             if (strpos('disposed', $searchLower) !== false) {
                 $baseBuilder->orWhere('s.status', 2);
+            }
+            if (strpos($searchLower, 'chiller') !== false) {
+                $baseBuilder->orWhereIn('c.duration_id', [1, 4]);
+            }
+            if (strpos($searchLower, 'freezer') !== false) {
+                $baseBuilder->orWhereIn('c.duration_id', [2, 3]);
+            }
+            if (strpos($searchLower, '7-day') !== false || strpos($searchLower, '7 day') !== false) {
+                $baseBuilder->orWhere('c.duration_id', 1);
+            }
+            if (strpos($searchLower, '14-day') !== false || strpos($searchLower, '14 day') !== false) {
+                $baseBuilder->orWhereIn('c.duration_id', [2, 4]);
+            }
+            if (strpos($searchLower, '21-day') !== false || strpos($searchLower, '21 day') !== false) {
+                $baseBuilder->orWhere('c.duration_id', 3);
             }
 
             $baseBuilder->groupEnd();
@@ -696,6 +717,13 @@ class SpecimenController extends BaseController
             'c.duration_id'
         ])->get()->getResultArray();
 
+        $durationMetaMap = [
+            1 => ['label' => '7-day (Chiller)', 'bg' => '#1E90FF', 'text' => '#fff'],
+            4 => ['label' => '14-day (Chiller)', 'bg' => '#00bcd4', 'text' => '#000'],
+            2 => ['label' => '14-day (Freezer)', 'bg' => '#FFD700', 'text' => '#000'],
+            3 => ['label' => '21-day (Freezer)', 'bg' => '#FF4500', 'text' => '#fff'],
+        ];
+
         $data = [];
         $i = $start + 1;
         foreach ($records as $s) {
@@ -705,6 +733,11 @@ class SpecimenController extends BaseController
 
             $currentStatus = isset($s['status']) ? (int)$s['status'] : 0;
             $currentMeta = $statusMap[$currentStatus] ?? ['label' => 'Inactive', 'class' => 'bg-danger'];
+
+            $dMeta = $durationMetaMap[$durationId] ?? null;
+            $categoryBadge = $dMeta 
+                ? '<div class="mt-1"><span class="badge" style="background:' . $dMeta['bg'] . '; color:' . $dMeta['text'] . '; font-size:0.7rem; font-weight:600;">' . $dMeta['label'] . '</span></div>' 
+                : '';
 
             $svgHtml = '<svg width="120" height="34" viewBox="0 0 120 34" xmlns="http://www.w3.org/2000/svg" class="barcode-tube" style="cursor:pointer" '
                 . 'role="img" '
@@ -721,7 +754,7 @@ class SpecimenController extends BaseController
                 $svgHtml,
                 '<span class="fw-bold">' . esc($s['slot_no'] ?? '-') . '</span>',
                 esc($s['container_label'] ?? '-'),
-                '<small class="text-muted"><i class="fa-solid fa-database me-1"></i>' . esc($s['storage_name'] ?? '-') . '</small>',
+                '<small class="text-muted d-block"><i class="fa-solid fa-database me-1"></i>' . esc($s['storage_name'] ?? '-') . '</small>' . $categoryBadge,
                 '<span class="badge bg-light text-dark border py-1 px-2">' . esc($s['units_name'] ?? '-') . '</span>',
                 !empty($s['created_at']) ? date('d-m-Y h:i A', strtotime($s['created_at'])) : '-',
                 !empty($s['created_by']) ? esc(explode('@', $s['created_by'])[0]) : '-',

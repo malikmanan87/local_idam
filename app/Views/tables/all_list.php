@@ -76,6 +76,26 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
         color: #fff !important;
         border-bottom-color: transparent;
     }
+
+    .duration-filter-btn {
+        transition: all 0.2s ease-in-out;
+        opacity: 0.82;
+        border-radius: 20px;
+        padding: 0.28rem 0.85rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+    .duration-filter-btn:hover {
+        opacity: 1;
+        transform: translateY(-1px);
+    }
+    .duration-filter-btn.active {
+        opacity: 1 !important;
+        font-weight: 700 !important;
+        box-shadow: 0 0 0 2px #fff, 0 4px 8px rgba(0,0,0,0.3) !important;
+        transform: translateY(-1px);
+    }
 </style>
 
 <div id="layoutSidenav_content">
@@ -94,12 +114,24 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                 <div class="alert alert-danger"><?= esc($msg) ?></div>
             <?php endif; ?>
 
-            <div class="mb-3">
-                <span class="badge" style="background:#1E90FF">7-day (Chiller)</span>
-                <span class="badge" style="background:#00bcd4;color:#000">14-day (Chiller)</span>
-                <span class="badge" style="background:#FFD700;color:#000">14-day (Freezer)</span>
-                <span class="badge" style="background:#FF4500">21-day (Freezer)</span>
-                <span class="badge bg-secondary">Empty</span>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="small fw-semibold text-white-50 me-1"><i class="fa-solid fa-filter me-1"></i>Kategori Storan:</span>
+                <button type="button" class="btn btn-sm btn-light duration-filter-btn active" data-duration="all">
+                    <i class="fa-solid fa-list-ul me-1"></i> Semua Kategori
+                </button>
+                <button type="button" class="btn btn-sm text-white duration-filter-btn" style="background:#1E90FF;" data-duration="1">
+                    7-day (Chiller)
+                </button>
+                <button type="button" class="btn btn-sm text-dark duration-filter-btn" style="background:#00bcd4;" data-duration="4">
+                    14-day (Chiller)
+                </button>
+                <button type="button" class="btn btn-sm text-dark duration-filter-btn" style="background:#FFD700;" data-duration="2">
+                    14-day (Freezer)
+                </button>
+                <button type="button" class="btn btn-sm text-white duration-filter-btn" style="background:#FF4500;" data-duration="3">
+                    21-day (Freezer)
+                </button>
+                <span class="badge bg-secondary ms-md-auto py-2 px-3">Empty Slot</span>
             </div>
 
             <ul class="nav nav-tabs">
@@ -215,13 +247,18 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
     var slotSpecimens = <?= json_encode($slotSpecimens ?? []) ?>;
 
     $(function() {
+        let selectedDuration = 'all';
+
         // Initialize DataTables (Server-Side Processing)
-        $('#specimensTable').DataTable({
+        let specimensTable = $('#specimensTable').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
                 url: '<?= base_url('specimen/allSpecimensAjax') ?>',
-                type: 'POST'
+                type: 'POST',
+                data: function(d) {
+                    d.duration_id = selectedDuration;
+                }
             },
             pageLength: 10,
             ordering: true,
@@ -244,6 +281,20 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                     targets: [0, 1] // Menyekat sorting pada nombor dan grafik tiub
                 }
             ]
+        });
+
+        // Interaksi Klik Butang Penapis Kategori Tempoh
+        $(document).on('click', '.duration-filter-btn', function(e) {
+            e.preventDefault();
+            $('.duration-filter-btn').removeClass('active');
+            $(this).addClass('active');
+            selectedDuration = $(this).data('duration');
+
+            // Pastikan tab ALL diaktifkan jika pengguna sedang berada di tab visualizer unit
+            $('button[data-bs-target="#list"]').tab('show');
+
+            // Muat semula data jadual DataTable mengikut kategori dipilih
+            specimensTable.ajax.reload();
         });
 
         // Dynamic Modals Append Function
