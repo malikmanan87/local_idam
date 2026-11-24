@@ -74,7 +74,7 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
         <div class="container-fluid px-4">
             <h1 class="mt-4 text-white">Bulk Specimen Registration</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<?= base_url('/') ?>">Dashboard</a></li>
                 <li class="breadcrumb-item active">Bulk Entry +</li>
             </ol>
 
@@ -92,17 +92,19 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
                 <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
             <?php endif; ?>
 
-            <div class="col-md-12 mb-4">
-                <div class="card shadow-sm border-0 rounded-3">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="fa-solid fa-vials me-1"></i> Bulk Specimen Registration Form
-                        </div>
-                    </div>
-
-                    <form method="post" action="<?= base_url('specimen/saveBulk') ?>" id="specimenForm" class="p-3">
+            <!-- ======================================================== -->
+            <!-- CARD 1: BULK SPECIMEN REGISTRATION FORM                  -->
+            <!-- ======================================================== -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark">
+                        <i class="fa-solid fa-vials text-primary me-2"></i>Bulk Specimen Registration Form
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" action="<?= base_url('specimen/saveBulk') ?>" id="specimenForm">
                         <?= csrf_field() ?>
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="form-label small fw-semibold">Unit Workspace Selection</label>
                             <div id="unitButtons" class="btn-group d-flex flex-wrap" role="group">
                                 <?php foreach ($units as $unit): ?>
@@ -131,17 +133,17 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
                             </div>
                         </div>
 
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="form-label small fw-semibold">Storage Equipment</label>
                             <div id="storageButtons" class="btn-group d-flex flex-wrap" role="group"></div>
                         </div>
 
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="form-label small fw-semibold">Container Box Number</label>
                             <div id="containerNumberButtons" class="btn-group d-flex flex-wrap" role="group"></div>
                         </div>
 
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="form-label small fw-semibold">Container Label (Today Valid Batch)</label>
                             <div id="containerButtons" class="btn-group d-flex flex-wrap" role="group"></div>
                         </div>
@@ -151,7 +153,7 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
 
                         <div class="mb-1 small text-danger fw-bold" id="slotCounter"></div>
 
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="form-label small fw-semibold">Specimen Matrix Slot Placement Grid (Auto-Populating)</label>
                             <div class="mb-2 d-flex align-items-center gap-3">
                                 <div class="d-flex align-items-center gap-1">
@@ -183,23 +185,29 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
                             <div class="form-text text-muted" id="bulkCountLabel">0 valid samples identified in entry stream pool.</div>
                         </div>
 
-                        <button type="submit" class="btn btn-success px-4" id="submitBtn" disabled>
+                        <button type="submit" class="btn btn-success px-4 shadow-sm" id="submitBtn" disabled>
                             <i class="fa-solid fa-circle-check me-1"></i> Register Specimen Batch Units
                         </button>
                     </form>
                 </div>
             </div>
 
-            <div class="col-md-12 mb-4">
-                <div class="card shadow-sm border-0 rounded-3">
-                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
-                        <div class="small fw-bold">
-                            <i class="fa-solid fa-clock-rotate-left me-1"></i> Workspace Registry History (Last 48 Hours) — Global View
-                        </div>
-                    </div>
-                    <div class="card-body table-responsive p-2">
-                        <table id="historyLogTable" class="table table-sm table-striped table-bordered align-middle m-0" style="font-size: 0.85rem;">
-                            <thead class="table-light text-center small">
+            <!-- ======================================================== -->
+            <!-- CARD 2: WORKSPACE REGISTRY HISTORY (LAST 48 HOURS)        -->
+            <!-- ======================================================== -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-secondary">
+                        <i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Workspace Registry History (Last 48 Hours) — Global View
+                    </h5>
+                    <span class="badge bg-secondary rounded-pill px-3 py-2">
+                        <?= count($recentHistory ?? []) ?> Record(s)
+                    </span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table id="historyLogTable" class="table table-striped table-bordered align-middle w-100">
+                            <thead class="table-light text-center">
                                 <tr>
                                     <th style="width: 40px;">#</th>
                                     <th>Specimen Code</th>
@@ -207,7 +215,7 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
                                     <th>Placement Location (Storage - Box - Slot)</th>
                                     <th>Registered By</th>
                                     <th>Timestamp</th>
-                                    <th>status</th>
+                                    <th>Status</th>
                                     <th style="width: 90px;">Action</th>
                                 </tr>
                             </thead>
@@ -221,38 +229,38 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
                                             <td class="text-muted"><?= $count++ ?></td>
                                             <td class="fw-bold text-primary"><?= esc($log['specimens_code']) ?></td>
                                             <td><span class="badge bg-light text-dark border py-1 px-2"><?= esc($log['units_name']) ?></span></td>
-                                            <td class="text-start py-1">
+                                            <td class="text-start py-2">
                                                 <div style="font-size: 11px;" class="text-muted">
                                                     <i class="fa-solid fa-database me-1"></i><?= esc($log['storage_name']) ?>
                                                 </div>
                                                 <span class="fw-semibold"><?= esc($log['container_label']) ?></span>
                                                 <span class="badge bg-secondary p-1" style="font-size: 10px;">Slot <?= esc($log['slot_no']) ?></span>
                                             </td>
-                                            <td class="text-muted fw-medium"><?= esc($log['created_by']) ?></td>
+                                            <td class="text-muted fw-medium"><?= esc(explode('@', $log['created_by'])[0]) ?></td>
                                             <td class="text-nowrap text-muted" style="font-size: 11px;">
                                                 <i class="fa-regular fa-clock me-1"></i><?= date('d-m-Y h:i A', strtotime($log['created_at'])) ?>
                                             </td>
                                             <td>
                                                 <?php
-                                                $statusLabel = match ((int)$log['status']) {
-                                                    0 => 'Cancelled',
-                                                    1 => 'Active',
-                                                    2 => 'Dispose',
-                                                    default => 'Unknown'
+                                                $statusVal = (int)$log['status'];
+                                                $statusBadge = match ($statusVal) {
+                                                    0 => '<span class="badge bg-secondary">Cancelled</span>',
+                                                    1 => '<span class="badge bg-success">Active</span>',
+                                                    2 => '<span class="badge bg-warning text-dark">Disposed</span>',
+                                                    default => '<span class="badge bg-light text-dark border">Unknown</span>'
                                                 };
-                                                echo esc($statusLabel);
+                                                echo $statusBadge;
                                                 ?>
                                             </td>
                                             <td>
                                                 <?php if ((int)$log['status'] !== 0): ?>
                                                     <button type="button"
-                                                        class="btn btn-xs btn-outline-danger cancel-reg-btn py-0 px-2 small"
-                                                        style="font-size: 11px; height: 22px; line-height: 20px;"
+                                                        class="btn btn-sm btn-outline-danger cancel-reg-btn py-1 px-2"
                                                         data-code="<?= esc($log['specimens_code']) ?>">
-                                                        <i class="fa-solid fa-trash-can"></i> Cancel
+                                                        <i class="fa-solid fa-trash-can me-1"></i>Cancel
                                                     </button>
                                                 <?php else: ?>
-                                                    <span class="text-muted small" style="font-size: 11px;">Not Available</span>
+                                                    <span class="text-muted small">Not Available</span>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
@@ -355,10 +363,20 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
             order: [
                 [0, 'asc']
             ],
-            columnDefs: [{
-                orderable: false,
-                targets: [6]
-            }],
+            columnDefs: [
+                {
+                    targets: [0, 1, 2, 4, 5, 6, 7],
+                    className: 'text-center align-middle'
+                },
+                {
+                    targets: 3,
+                    className: 'text-start align-middle'
+                },
+                {
+                    orderable: false,
+                    targets: [7]
+                }
+            ],
             language: {
                 emptyTable: "<i class='fa-solid fa-folder-open me-1'></i> No bulk batches registered across the system within the last 48 hours."
             }
