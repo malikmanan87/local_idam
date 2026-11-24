@@ -134,6 +134,7 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
 | **RBM-11** | Penyeragaman Ikon Sidebar FontAwesome Solid & Lencana Notifikasi Pengguna Baharu | `app/Views/layout/page_layout.php` | **SELESAI** | `c9d975a` |
 | **RBM-12** | Penyelarasan Saiz Fon dan Gaya Pengepala (*Thead*) pada `/reports` | `app/Views/tables/combined_report.php` | **SELESAI** | `312f7c4` |
 | **RBM-13** | Penyeragaman Format Tarikh 12-Jam & Pemotongan Domain Email pada `all_list` | `app/Controllers/SpecimenController.php` | **SELESAI** | `b995212` |
+| **RBM-14** | Butang Penapis Kategori Interaktif (*Interactive Duration Filters*) & Lencana Kategori Storan pada `all_list` | `all_list.php`, `SpecimenController.php` | **SELESAI** | `216964b` |
 
 ---
 
@@ -266,6 +267,15 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
     ```
     *Contoh Paparan*: `malikmanan` (bukan lagi `malikmanan@unisza.edu.my`).
 * **Commit**: `b995212`
+
+### RBM-14: Butang Penapis Kategori Interaktif & Lencana Kategori Storan pada `all_list`
+* **Tujuan**: Membolehkan staf makmal menapis dan melihat kategori spesimen yang dikehendaki secara pantas (contoh: hanya melihat spesimen *14-day Chiller* sahaja dalam jadual).
+* **Tindakan**:
+  * **Butang Penapis Interaktif**: Mengubah lencana pasif di atas jadual [all_list.php](file:///c:/xampp/htdocs/idam/app/Views/tables/all_list.php) kepada butang penapis klik pantas (*interactive filter pills*) dengan kesan aktif border putih bersinar (*white glowing ring*).
+  * **Penapisan Masa Nyata (AJAX)**: Menyokong parameter `duration_id` pada kaedah `allSpecimensAjax()` dalam [SpecimenController.php](file:///c:/xampp/htdocs/idam/app/Controllers/SpecimenController.php) bagi memuatkan spesimen mengikut kategori tempoh terpilih secara terus tanpa memuat semula keseluruhan halaman.
+  * **Lencana Kategori dalam Jadual**: Menyuntik lencana kategori storan (contoh: `<span class="badge" style="background:#00bcd4; color:#000;">14-day (Chiller)</span>`) di bawah nama storan pada lajur *Storage*.
+  * **Sokongan Carian Kata Kunci**: Menambah keupayaan carian DataTables bagi kata kunci `"chiller"`, `"freezer"`, `"7-day"`, `"14-day"`, dan `"21-day"`.
+* **Commit**: `216964b`
 
 ---
 
