@@ -11,17 +11,27 @@
                 <li class="breadcrumb-item active">Maintenance</li>
             </ol>
 
-            <ul class="nav nav-tabs mb-3">
-                <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-units">Units</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-storages">Storages</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-containers">Containers</button>
-                </li>
-            </ul>
+            <style>
+                .card-header-tabs .nav-link {
+                    color: #495057;
+                    font-weight: 600;
+                    border-top-left-radius: 0.4rem;
+                    border-top-right-radius: 0.4rem;
+                    padding: 0.65rem 1.25rem;
+                    transition: all 0.2s ease-in-out;
+                }
+                .card-header-tabs .nav-link.active {
+                    color: #0d6efd !important;
+                    background-color: #fff;
+                    border-color: #dee2e6 #dee2e6 #fff;
+                    border-bottom: 2px solid #fff;
+                }
+                .card-header-tabs .nav-link:hover:not(.active) {
+                    color: #0d6efd;
+                    background-color: rgba(13, 110, 253, 0.05);
+                    border-color: #e9ecef #e9ecef #dee2e6;
+                }
+            </style>
 
             <?php
             $statusMap   = [1 => 'Active', 2 => 'Inactive', 3 => 'Maintenance'];
@@ -29,18 +39,46 @@
             $btnClass    = [1 => 'success', 2 => 'secondary', 3 => 'warning'];
             ?>
 
-            <div class="tab-content">
-
-                <div class="tab-pane fade show active" id="tab-units">
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                            <span><i class="fas fa-building me-1"></i> Units List</span>
-                            <button class="btn btn-primary btn-sm mt-2 mt-md-0" id="btnAddUnit">
-                                <i class="fas fa-plus me-1"></i> Add New Unit
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
+                    <ul class="nav nav-tabs card-header-tabs" id="maintenanceTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold" id="tab-units-btn" data-bs-toggle="tab" data-bs-target="#tab-units" type="button" role="tab" aria-controls="tab-units" aria-selected="true">
+                                <i class="fas fa-building text-primary me-2"></i>Units
+                                <span class="badge bg-secondary rounded-pill ms-1"><?= count($units) ?></span>
                             </button>
-                        </div>
-                        <div class="card-body">
-                            <table id="unitTable" class="table table-striped table-bordered align-middle">
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold" id="tab-storages-btn" data-bs-toggle="tab" data-bs-target="#tab-storages" type="button" role="tab" aria-controls="tab-storages" aria-selected="false">
+                                <i class="fas fa-warehouse text-warning me-2"></i>Storages
+                                <span class="badge bg-secondary rounded-pill ms-1"><?= count($storages) ?></span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold" id="tab-containers-btn" data-bs-toggle="tab" data-bs-target="#tab-containers" type="button" role="tab" aria-controls="tab-containers" aria-selected="false">
+                                <i class="fas fa-boxes text-success me-2"></i>Containers
+                                <span class="badge bg-secondary rounded-pill ms-1"><?= count($containers) ?></span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-4">
+                    <div class="tab-content" id="maintenanceTabsContent">
+
+                        <!-- ========================================== -->
+                        <!-- TAB 1: UNITS                               -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade show active" id="tab-units" role="tabpanel" aria-labelledby="tab-units-btn">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0 fw-bold text-secondary">
+                                    <i class="fas fa-building text-primary me-2"></i>Units List
+                                </h5>
+                                <button class="btn btn-primary btn-sm" id="btnAddUnit">
+                                    <i class="fas fa-plus me-1"></i> Add New Unit
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="unitTable" class="table table-striped table-bordered align-middle w-100">
                                 <thead>
                                     <tr>
                                         <th>Unit Code</th>
@@ -87,18 +125,21 @@
                             </table>
                         </div>
                     </div>
-                </div>
 
-                <div class="tab-pane fade" id="tab-storages">
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                            <span><i class="fas fa-warehouse me-1"></i> Storage List</span>
-                            <button class="btn btn-primary btn-sm mt-2 mt-md-0" id="btnAddStorage">
+                    <!-- ========================================== -->
+                    <!-- TAB 2: STORAGES                            -->
+                    <!-- ========================================== -->
+                    <div class="tab-pane fade" id="tab-storages" role="tabpanel" aria-labelledby="tab-storages-btn">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0 fw-bold text-secondary">
+                                <i class="fas fa-warehouse text-warning me-2"></i>Storage List
+                            </h5>
+                            <button class="btn btn-primary btn-sm" id="btnAddStorage">
                                 <i class="fas fa-plus me-1"></i> Add New Storage
                             </button>
                         </div>
-                        <div class="card-body">
-                            <table id="storageTable" class="table table-striped table-bordered align-middle">
+                        <div class="table-responsive">
+                            <table id="storageTable" class="table table-striped table-bordered align-middle w-100">
                                 <thead>
                                     <tr>
                                         <th>Unit Code</th>
@@ -153,18 +194,21 @@
                             </table>
                         </div>
                     </div>
-                </div>
 
-                <div class="tab-pane fade" id="tab-containers">
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                            <span><i class="fas fa-boxes me-1"></i> Container List</span>
-                            <button class="btn btn-primary btn-sm mt-2 mt-md-0" id="btnAddContainer">
+                    <!-- ========================================== -->
+                    <!-- TAB 3: CONTAINERS                          -->
+                    <!-- ========================================== -->
+                    <div class="tab-pane fade" id="tab-containers" role="tabpanel" aria-labelledby="tab-containers-btn">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0 fw-bold text-secondary">
+                                <i class="fas fa-boxes text-success me-2"></i>Container List
+                            </h5>
+                            <button class="btn btn-primary btn-sm" id="btnAddContainer">
                                 <i class="fas fa-plus me-1"></i> Add New Container
                             </button>
                         </div>
-                        <div class="card-body">
-                            <table id="containerTable" class="table table-striped table-bordered align-middle">
+                        <div class="table-responsive">
+                            <table id="containerTable" class="table table-striped table-bordered align-middle w-100">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -227,9 +271,10 @@
                             </table>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
+        </div>
         </div>
     </main>
 </div>
@@ -244,6 +289,19 @@
         const dtUnits = $('#unitTable').DataTable({ responsive: true, autoWidth: false });
         const dtStorages = $('#storageTable').DataTable({ responsive: true, autoWidth: false });
         const dtContainers = $('#containerTable').DataTable({ responsive: true, autoWidth: false });
+
+        // Laraskan semula saiz ruangan DataTable apabila tab ditukar (elak header/lebar terhimpit)
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+            sessionStorage.setItem('active_maintenance_tab', $(e.target).attr('data-bs-target'));
+            $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().responsive.recalc();
+        });
+
+        // Kekalkan tab yang aktif selepas reload (cth: selepas edit/tambah/kemaskini status)
+        const savedTab = sessionStorage.getItem('active_maintenance_tab');
+        if (savedTab && $(`button[data-bs-target="${savedTab}"]`).length) {
+            var tabToActivate = new bootstrap.Tab(document.querySelector(`button[data-bs-target="${savedTab}"]`));
+            tabToActivate.show();
+        }
 
         const tablesMap = { 'unit': dtUnits, 'storage': dtStorages, 'container': dtContainers };
 
