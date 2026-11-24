@@ -6,7 +6,7 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4 text-white">Disposal List</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<?= base_url('/') ?>">Dashboard</a></li>
                 <li class="breadcrumb-item active">Disposal</li>
             </ol>
 
@@ -26,81 +26,119 @@
                 ];
                 ?>
 
-                <?php foreach ($queues as $q): ?>
-                    <?php
-                        $tableId    = $q['tableId'];
-                        $days       = $q['days'];
-                        $label      = $q['label'];
-                        $requestUrl = site_url('specimen/requestDisposeAll') . "?days={$days}";
-                    ?>
-                    <div class="card shadow-lg border-0 rounded-2 mb-4">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="fa-solid fa-trash-can me-2"></i>
-                                Specimens Ready for Disposal (<?= $label ?>)
-                            </div>
-
-                            <div class="d-flex gap-2 align-items-center">
-                                <?php if (in_array($role, [1, 2, 3], true)): ?>
-                                    <a href="<?= $requestUrl ?>" class="btn btn-sm glow-button"
-                                        data-days="<?= $days ?>"
-                                        id="requestBtn_<?= $tableId ?>"
-                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="Submit a disposal approval request for all mature specimens in this queue">
-                                        Request to Dispose
-                                    </a>
-                                <?php endif; ?>
-
-                                <?php if (in_array($role, [2, 3], true)): ?>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary toggle-all-checkboxes-btn"
-                                        data-table="#<?= esc($tableId) ?>" data-state="checked"
-                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="Select or uncheck all specimen checkboxes on the current page">
-                                        <i class="fa-solid fa-square-minus me-1"></i> Untick All
+                <!-- ======================================================== -->
+                <!-- SINGLE OUTER CARD WITH TABS (PILIHAN B - GAYA /role)    -->
+                <!-- ======================================================== -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
+                        <ul class="nav nav-tabs card-header-tabs" id="disposalTabs" role="tablist">
+                            <?php foreach ($queues as $idx => $q): ?>
+                                <?php
+                                    $days = $q['days'];
+                                    $iconClass = match ($days) {
+                                        7 => 'fa-snowflake text-primary',
+                                        14 => 'fa-box-archive text-info',
+                                        21 => 'fa-temperature-arrow-down text-danger',
+                                        default => 'fa-trash-can text-secondary'
+                                    };
+                                ?>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link <?= $idx === 0 ? 'active' : '' ?> fw-bold" 
+                                        id="tab-queue<?= $days ?>-btn" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#queue<?= $days ?>-pane" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="queue<?= $days ?>-pane" 
+                                        aria-selected="<?= $idx === 0 ? 'true' : 'false' ?>">
+                                        <i class="fa-solid <?= $iconClass ?> me-2"></i><?= esc($q['label']) ?>
                                     </button>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="tab-content" id="disposalTabsContent">
+                            <?php foreach ($queues as $idx => $q): ?>
+                                <?php
+                                    $tableId    = $q['tableId'];
+                                    $days       = $q['days'];
+                                    $label      = $q['label'];
+                                    $requestUrl = site_url('specimen/requestDisposeAll') . "?days={$days}";
+                                ?>
+                                <div class="tab-pane fade <?= $idx === 0 ? 'show active' : '' ?>" 
+                                    id="queue<?= $days ?>-pane" 
+                                    role="tabpanel" 
+                                    aria-labelledby="tab-queue<?= $days ?>-btn">
 
-                                    <button type="button" class="btn btn-sm btn-outline-danger dispose-selected-btn"
-                                        data-table="#<?= esc($tableId) ?>"
-                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="Permanently dispose only the checked specimens on this table">
-                                        <i class="fa-solid fa-dumpster me-1"></i> Dispose Selected
-                                    </button>
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-3 border-bottom gap-2">
+                                        <h5 class="mb-0 fw-bold text-secondary">
+                                            <i class="fa-solid fa-trash-can text-danger me-2"></i>
+                                            Specimens Ready for Disposal (<?= esc($label) ?>)
+                                        </h5>
 
-                                    <button type="button" class="btn btn-sm btn-danger dispose-all-queue-btn"
-                                        data-table="#<?= esc($tableId) ?>"
-                                        data-days="<?= $days ?>"
-                                        data-label="<?= esc($label) ?>"
-                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="Permanently dispose ALL eligible specimens in this entire queue across all pages">
-                                        <i class="fa-solid fa-dumpster-fire me-1"></i> Dispose All in Queue
-                                    </button>
-                                <?php endif; ?>
-                            </div>
-                        </div>
+                                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                                            <?php if (in_array($role, [1, 2, 3], true)): ?>
+                                                <a href="<?= $requestUrl ?>" class="btn btn-sm glow-button"
+                                                    data-days="<?= $days ?>"
+                                                    id="requestBtn_<?= $tableId ?>"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Submit a disposal approval request for all mature specimens in this queue">
+                                                    Request to Dispose
+                                                </a>
+                                            <?php endif; ?>
 
-                        <div class="card-body p-4">
-                            <div class="table-responsive">
-                                <table id="<?= esc($tableId) ?>" class="table table-bordered table-striped align-middle w-100">
-                                    <thead class="text-center table-light">
-                                        <tr>
-                                            <th style="width: 40px;">#</th>
-                                            <th>Specimen</th>
-                                            <th>Slot No</th>
-                                            <th>Container</th>
-                                            <th>Storage</th>
-                                            <th>Unit</th>
-                                            <th>Created At</th>
-                                            <th>Age (days)</th>
-                                            <th>Request Status</th>
-                                            <th style="width: 80px;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
+                                            <?php if (in_array($role, [2, 3], true)): ?>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary toggle-all-checkboxes-btn"
+                                                    data-table="#<?= esc($tableId) ?>" data-state="checked"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Select or uncheck all specimen checkboxes on the current page">
+                                                    <i class="fa-solid fa-square-minus me-1"></i> Untick All
+                                                </button>
+
+                                                <button type="button" class="btn btn-sm btn-outline-danger dispose-selected-btn"
+                                                    data-table="#<?= esc($tableId) ?>"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Permanently dispose only the checked specimens on this table">
+                                                    <i class="fa-solid fa-dumpster me-1"></i> Dispose Selected
+                                                </button>
+
+                                                <button type="button" class="btn btn-sm btn-danger dispose-all-queue-btn"
+                                                    data-table="#<?= esc($tableId) ?>"
+                                                    data-days="<?= $days ?>"
+                                                    data-label="<?= esc($label) ?>"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Permanently dispose ALL eligible specimens in this entire queue across all pages">
+                                                    <i class="fa-solid fa-dumpster-fire me-1"></i> Dispose All in Queue
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table id="<?= esc($tableId) ?>" class="table table-striped table-bordered align-middle w-100">
+                                            <thead class="table-light text-center">
+                                                <tr>
+                                                    <th style="width: 40px;">#</th>
+                                                    <th>Specimen</th>
+                                                    <th>Slot No</th>
+                                                    <th>Container</th>
+                                                    <th>Storage</th>
+                                                    <th>Unit</th>
+                                                    <th>Created At</th>
+                                                    <th>Age (days)</th>
+                                                    <th>Request Status</th>
+                                                    <th style="width: 80px;">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                </div>
 
             </div>
         </div>
@@ -109,6 +147,26 @@
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <style>
+    .card-header-tabs .nav-link {
+        color: #495057;
+        font-weight: 600;
+        border-top-left-radius: 0.4rem;
+        border-top-right-radius: 0.4rem;
+        padding: 0.65rem 1.25rem;
+        transition: all 0.2s ease-in-out;
+    }
+    .card-header-tabs .nav-link.active {
+        color: #0d6efd !important;
+        background-color: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-bottom: 2px solid #fff;
+    }
+    .card-header-tabs .nav-link:hover:not(.active) {
+        color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.05);
+        border-color: #e9ecef #e9ecef #dee2e6;
+    }
+
     .glow-button {
         position: relative;
         background-color: #f8f9fa;
@@ -225,6 +283,18 @@
         var table7  = initDisposalTable('#datatable7',  7);
         var table14 = initDisposalTable('#datatable14', 14);
         var table21 = initDisposalTable('#datatable21', 21);
+
+        // Tab switching: adjust DataTable columns and persist active tab in sessionStorage
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+            sessionStorage.setItem('active_disposal_tab', $(e.target).attr('data-bs-target'));
+            $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().responsive.recalc();
+        });
+
+        // Restore active tab from sessionStorage on page load if present
+        const savedDisposalTab = sessionStorage.getItem('active_disposal_tab');
+        if (savedDisposalTab && $(`button[data-bs-target="${savedDisposalTab}"]`).length) {
+            $(`button[data-bs-target="${savedDisposalTab}"]`).tab('show');
+        }
 
         // =========================================================================
         // 1. REQUEST DISPOSAL — SweetAlert amaran pengesahan
