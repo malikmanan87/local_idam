@@ -15,9 +15,8 @@ class RoleFilter implements FilterInterface
         // 1. Dapatkan path URI semasa
         $uri = trim(service('uri')->getPath(), '/');
 
-        // 2. Senarai laluan awam asas
-        $isOpenRoute = url_is('/') ||
-            url_is('login') ||
+        // 2. Senarai laluan awam asas (Laluan '/' dikeluarkan agar Dashboard memerlukan sesi aktif)
+        $isOpenRoute = url_is('login') ||
             url_is('newuser') ||
             url_is('newuser/*') ||
             url_is('forms/logout') ||
@@ -41,6 +40,12 @@ class RoleFilter implements FilterInterface
                     
                     // Kecualikan laluan 'forms/logout' supaya tidak berlaku loop melencong
                     if (!url_is('forms/logout')) {
+                        if ($request->isAJAX()) {
+                            return service('response')->setStatusCode(401)->setJSON([
+                                'session_expired' => true,
+                                'redirect' => base_url('forms/logout')
+                            ]);
+                        }
                         return redirect()->to(base_url('forms/logout'));
                     }
                     
@@ -69,13 +74,32 @@ class RoleFilter implements FilterInterface
             return;
         }
 
-        // 4. Sekatan jika tiada sesi aktif (Mod Biasa) -> Hantar ke halaman newuser
+        // 4. Sekatan jika tiada sesi aktif (Mod Biasa) -> Hantar ke forms/logout
         if (!$session->has('user_id')) {
-            return redirect()->to(base_url('newuser'));
+            if ($request->isAJAX()) {
+                return service('response')
+                    ->setStatusCode(401)
+                    ->setJSON([
+                        'session_expired' => true,
+                        'message' => 'Sesi anda telah tamat tempoh kerana tiada aktiviti. Sila log masuk semula.',
+                        'redirect' => base_url('forms/logout')
+                    ]);
+            }
+
+            return redirect()->to(base_url('forms/logout'))
+                ->with('info', 'Sesi anda telah tamat tempoh kerana tiada aktiviti. Sila log masuk semula.');
         }
 
         // 5. Sekatan jika akaun masih pending (Status 0)
         if ((int)$session->get('status') === 0) {
+            if ($request->isAJAX()) {
+                return service('response')
+                    ->setStatusCode(403)
+                    ->setJSON([
+                        'error' => 'Your access request has already been submitted and is currently awaiting Administrator approval.'
+                    ]);
+            }
+
             return redirect()->to(base_url('newuser'))
                 ->with('error', 'Your access request has already been submitted and is currently awaiting Administrator approval.');
         }
@@ -84,6 +108,14 @@ class RoleFilter implements FilterInterface
         if ($arguments) {
             $role = (int)$session->get('role');
             if (!in_array($role, array_map('intval', $arguments))) {
+                if ($request->isAJAX()) {
+                    return service('response')
+                        ->setStatusCode(403)
+                        ->setJSON([
+                            'error' => 'Access Denied: You do not possess the required security clearance for that workstation.'
+                        ]);
+                }
+
                 return redirect()->to(base_url('/'))->with('error', 'Access Denied: You do not possess the required security clearance for that workstation.');
             }
         }

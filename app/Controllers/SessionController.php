@@ -80,10 +80,10 @@ class SessionController extends BaseController
     public function logoutPage()
     {
         $session = session();
+        $infoMessage = $session->getFlashdata('info') ?? $session->getFlashdata('error');
         $session->destroy(); // 🌟 Memusnahkan semua data sesi (role, user_id dll)
 
-        // Kembalikan ke halaman utama, di mana RoleFilter akan automatik menangkap mod maintenance
-        // return redirect()->to(base_url('/')); 
-        return view('forms/logout');
+        // Paparkan halaman logout dengan mesej sesi tamat jika ada
+        return view('forms/logout', ['infoMessage' => $infoMessage]);
     }
 }

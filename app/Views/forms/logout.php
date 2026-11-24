@@ -54,6 +54,13 @@
     <p class="text-muted mb-1">You have been safely logged out of the i-DAM System.</p>
     <p class="text-secondary small mb-0">Please login again via the UniSZA portal to continue.</p>
 
+    <?php if (!empty($infoMessage)): ?>
+        <div class="alert alert-warning text-dark mt-3 mb-1 small shadow-sm text-start" style="background-color: #fff3cd; border-color: #ffecb5; padding: 10px 14px; border-radius: 6px;">
+            <i class="fa-solid fa-triangle-exclamation me-1 text-warning"></i>
+            <?= esc($infoMessage) ?>
+        </div>
+    <?php endif; ?>
+
     <div class="redirect-notice text-light">
         <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
         <span>Redirecting to UniSZA iStaff Portal in <b id="countdown" class="text-warning fs-5">5</b> seconds...</span>

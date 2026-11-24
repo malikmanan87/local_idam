@@ -259,6 +259,28 @@ $isMaintenanceActive = $maintenanceRow ? (int)$maintenanceRow->setting_value ===
                 allowInput: true
             });
         });
+
+        // Global AJAX Error Interceptor untuk Sesi Tamat Tempoh (HTTP 401)
+        if (typeof $.fn.dataTable !== 'undefined') {
+            $.fn.dataTable.ext.errMode = 'none'; // Elakkan pop-up alert lalai DataTables
+        }
+
+        let isSessionExpiredModalOpen = false;
+        $(document).ajaxError(function(event, jqXHR) {
+            if (jqXHR.status === 401 && !isSessionExpiredModalOpen) {
+                isSessionExpiredModalOpen = true;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sesi Tamat Tempoh',
+                    text: 'Sesi anda telah tamat tempoh kerana tiada aktiviti. Anda akan dialihkan ke halaman log keluar.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0d6efd',
+                    allowOutsideClick: false
+                }).then(function() {
+                    window.location.href = "<?= base_url('forms/logout') ?>";
+                });
+            }
+        });
     </script>
 </body>
 
