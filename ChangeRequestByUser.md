@@ -270,14 +270,27 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
 ---
 
 ## 2.3 Peraturan Tetap Operasi Pentadbir (Standing Deployment Rule)
-Bagi memastikan integriti kod antara persekitaran tempatan (Localhost) dan pelayan langsung (Live Server), setiap penambahbaikan wajib mematuhi protokol dua langkah berikut:
-1. **Langkah 1**: Setiap perubahan kod yang lengkap dan disahkan bebas ralat sintaks (`php -l`) **mesti di-commit dan di-push ke GitHub** terlebih dahulu:
-   ```powershell
-   git add <fail-terlibat>
-   git commit -m "<mesej komit berstruktur>"
-   git push origin main
-   ```
-2. **Langkah 2**: Memaparkan kod perintah **rclone copy** ke Live Server pada penghujung setiap maklum balas bagi memudahkan penyegerakan terus ke pelayan produksi:
-   ```powershell
-   C:\rclone\rclone.exe copy "c:\xampp\htdocs\idam" "idam_live:/var/www/idam" --exclude ".git/**" --exclude ".env" --exclude "writable/**" --exclude "vendor/**" --exclude "rclone.conf" --update --progress
-   ```
+Bagi memastikan integriti kod dan dokumentasi antara persekitaran tempatan (Localhost) dan pelayan langsung (Live Server), setiap permintaan/perubahan wajib mematuhi **Protokol Aliran Kerja 3-Langkah (Git Push > Update ChangeRequestByUser > Kod Perintah Rclone)**:
+
+1. **Langkah 1: Pelaksanaan Perubahan & Git Push Kod**
+   * Selesaikan perubahan kod mengikut spesifikasi.
+   * Sahkan sintaks PHP (`php -l`) dan semak integriti perubahan (`git diff`).
+   * Lakukan komit dan push kod ke GitHub:
+     ```powershell
+     git add <fail-terlibat>
+     git commit -m "<mesej komit berstruktur>"
+     git push origin main
+     ```
+
+2. **Langkah 2: Kemaskini Dokumentasi ChangeRequestByUser**
+   * Rakamkan setiap perubahan/permintaan ke dalam fail [ChangeRequestByUser.md](file:///c:/xampp/htdocs/idam/ChangeRequestByUser.md):
+     * Masukkan ke dalam **RequestByUser** jika melibatkan fungsi bisnes/makmal.
+     * Masukkan ke dalam **RequestByMe** jika melibatkan penambahbaikan teknikal, UI/UX, sekuriti atau operasi pentadbir.
+   * Catat ID, modul terlibat, ringkasan impak, dan nombor commit Git yang terhasil.
+   * Lakukan komit dan push fail dokumentasi ke GitHub.
+
+3. **Langkah 3: Paparan Kod Perintah Push rclone ke Live Server**
+   * Sentiasa paparkan kod perintah rasmi `rclone copy` ke Live Server pada penghujung respons:
+     ```powershell
+     C:\rclone\rclone.exe copy "c:\xampp\htdocs\idam" "idam_live:/var/www/idam" --exclude ".git/**" --exclude ".env" --exclude "writable/**" --exclude "vendor/**" --exclude "rclone.conf" --update --progress
+     ```
