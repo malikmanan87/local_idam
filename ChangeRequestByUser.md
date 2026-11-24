@@ -136,6 +136,7 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
 | **RBM-13** | Penyeragaman Format Tarikh 12-Jam & Pemotongan Domain Email pada `all_list` | `app/Controllers/SpecimenController.php` | **SELESAI** | `b995212` |
 | **RBM-14** | Butang Penapis Kategori Interaktif (*Interactive Duration Filters*) & Lencana Kategori Storan pada `all_list` | `all_list.php`, `SpecimenController.php` | **SELESAI** | `216964b` |
 | **RBM-15** | Penyeragaman Bahasa Inggeris (*English Standardization*) pada `all_list` | `app/Views/tables/all_list.php` | **SELESAI** | `cd69530` |
+| **RBM-16** | Penyeragaman Gaya Kad, Tab & Jadual `all_list` Mengikut Gaya `/role` | `app/Views/tables/all_list.php` | **SELESAI** | `fc22a64` |
 
 ---
 
@@ -285,6 +286,15 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
   * Menyelaraskan butang penapis utama daripada *Semua Kategori* kepada **`All Categories`**.
   * Menyelaraskan komen kod dalaman JavaScript ke bahasa Inggeris standard.
 * **Commit**: `cd69530`
+
+### RBM-16: Penyeragaman Gaya Kad, Tab & Jadual `all_list` Mengikut Gaya `/role`
+* **Tujuan**: Menyelaraskan reka bentuk kad, tab navigasi dan jadual pada All Specimens (`/specimen/all_list`) agar konsisten dengan piawaian moden `/role` sambil mengekalkan sepenuhnya fungsi dan gaya butang penapis kategori storan.
+* **Tindakan**:
+  * Mengubah reka bentuk kepada konsep satu kad luar bersepadu (*single outer card with card-header-tabs*) dengan tab navigasi moden (All Specimens + Tab Unit) seperti di `/role`.
+  * Menyelaraskan kelas jadual kepada `<table id="specimensTable" class="table table-striped table-bordered align-middle w-100">` dan pengepala `<thead class="table-light text-center">`.
+  * Mengekalkan reka bentuk penapis interaktif kategori storan (*Storage Category Filter Buttons*) dengan kotak berlatar belakang cerah di bahagian atas kandungan.
+  * Memasang fungsi pengekalan tab aktif `sessionStorage` (`active_all_list_tab`) serta pelarasan semula kelebaran kolum DataTable secara automatik (`columns.adjust().responsive.recalc()`) semasa pertukaran tab.
+* **Commit**: `fc22a64`
 
 ---
 
