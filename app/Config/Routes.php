@@ -93,7 +93,7 @@ $routes->post('reports/disposalAuditAjax', 'ReportController::disposalAuditAjax'
 $routes->post('reports/cancelledAuditAjax', 'ReportController::cancelledAuditAjax', ['filter' => 'role:2,3']);
 $routes->post('reports/exportAuditAjax', 'ReportController::exportAuditAjax', ['filter' => 'role:2,3']);
 
-// Laluan untuk memaparkan borang suis maintenance
-$routes->get('admin/settings', 'AdminController::settings');
+// Laluan untuk memaparkan borang suis maintenance (Khusus Role 3)
+$routes->get('admin/settings', 'AdminController::settings', ['filter' => 'role:3']);
 // Laluan untuk memproses borang simpanan (POST)
-$routes->post('admin/saveSettings', 'AdminController::saveSettings');
+$routes->post('admin/saveSettings', 'AdminController::saveSettings', ['filter' => 'role:3']);
