@@ -158,6 +158,9 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                             21-day (Freezer)
                         </button>
                         <span class="badge bg-secondary ms-md-auto py-2 px-3">Empty Slot</span>
+                        <button type="button" class="btn btn-sm btn-outline-primary py-1 px-3 shadow-sm" id="btnShowStorageGuide" title="View Storage Matrix Guide">
+                            <i class="fa-solid fa-circle-question me-1"></i>Guide
+                        </button>
                     </div>
 
                     <div class="tab-content" id="specimenTabsContent">
@@ -368,50 +371,64 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
         });
     });
 
-    $(document).ready(function() {
-        if (!sessionStorage.getItem('all_list_guide_shown')) {
-            sessionStorage.setItem('all_list_guide_shown', 'true');
-
-            Swal.fire({
-                title: '<div class="text-start fs-5 fw-bold text-dark border-bottom pb-2"><i class="fa-solid fa-layer-group text-primary me-2"></i>Storage Matrix Guide</div>',
-                html: `
-            <div class="text-start p-2 text-secondary" style="font-size: 0.92rem; line-height: 1.5;">
-                <p class="mb-3">Welcome to the interactive slot visualizer interface. Use this panel to inspect physical box grid coordinate states:</p>
-                
-                <div class="d-flex flex-column gap-2 mb-3">
-                    <div class="d-flex align-items-center p-2 rounded bg-light border-start border-primary border-3">
-                        <span class="badge me-2 text-white" style="background:#1E90FF; width: 85px;">7-Day Chill</span>
-                        <span class="small text-muted">Blue slots represent 7-day chiller retention cycles.</span>
-                    </div>
-                    <div class="d-flex align-items-center p-2 rounded bg-light border-start border-info border-3">
-                        <span class="badge me-2 text-dark" style="background:#00bcd4; width: 85px;">14-Day Chill</span>
-                        <span class="small text-muted">Cyan slots represent 14-day chiller retention cycles.</span>
-                    </div>
-                    <div class="d-flex align-items-center p-2 rounded bg-light border-start border-warning border-3">
-                        <span class="badge me-2 text-dark" style="background:#FFD700; width: 85px;">14-Day Frz</span>
-                        <span class="small text-muted">Yellow slots represent 14-day freezer retention cycles.</span>
-                    </div>
-                    <div class="d-flex align-items-center p-2 rounded bg-light border-start border-danger border-3">
-                        <span class="badge me-2 text-white" style="background:#FF4500; width: 85px;">21-Day Frz</span>
-                        <span class="small text-muted">Red slots mark extended 21-day freezer hold cycles.</span>
-                    </div>
+    function showStorageMatrixGuide() {
+        Swal.fire({
+            title: '<div class="text-start fs-5 fw-bold text-dark border-bottom pb-2"><i class="fa-solid fa-layer-group text-primary me-2"></i>Storage Matrix Guide</div>',
+            html: `
+        <div class="text-start p-2 text-secondary" style="font-size: 0.92rem; line-height: 1.5;">
+            <p class="mb-3">Welcome to the interactive slot visualizer interface. Use this panel to inspect physical box grid coordinate states:</p>
+            
+            <div class="d-flex flex-column gap-2 mb-3">
+                <div class="d-flex align-items-center p-2 rounded bg-light border-start border-primary border-3">
+                    <span class="badge me-2 text-white" style="background:#1E90FF; width: 85px;">7-Day Chill</span>
+                    <span class="small text-muted">Blue slots represent 7-day chiller retention cycles.</span>
                 </div>
+                <div class="d-flex align-items-center p-2 rounded bg-light border-start border-info border-3">
+                    <span class="badge me-2 text-dark" style="background:#00bcd4; width: 85px;">14-Day Chill</span>
+                    <span class="small text-muted">Cyan slots represent 14-day chiller retention cycles.</span>
+                </div>
+                <div class="d-flex align-items-center p-2 rounded bg-light border-start border-warning border-3">
+                    <span class="badge me-2 text-dark" style="background:#FFD700; width: 85px;">14-Day Frz</span>
+                    <span class="small text-muted">Yellow slots represent 14-day freezer retention cycles.</span>
+                </div>
+                <div class="d-flex align-items-center p-2 rounded bg-light border-start border-danger border-3">
+                    <span class="badge me-2 text-white" style="background:#FF4500; width: 85px;">21-Day Frz</span>
+                    <span class="small text-muted">Red slots mark extended 21-day freezer hold cycles.</span>
+                </div>
+            </div>
 
+            <div class="d-flex flex-column gap-2">
+                <div class="p-2 bg-light border rounded text-muted small">
+                    <i class="fa-solid fa-filter text-primary me-1"></i> 
+                    <strong>Category Filter:</strong> You can click any <strong>Storage Category</strong> button above the table (e.g., <em>7-day Chiller</em>, <em>14-day Chiller</em>, <em>14-day Freezer</em>, <em>21-day Freezer</em>) to instantly filter and view only your desired category.
+                </div>
                 <div class="p-2 bg-light border rounded text-muted small">
                     <i class="fa-solid fa-circle-nodes text-primary me-1"></i> 
                     <strong>Pro Tip:</strong> Tap on any square block grid cell coordinate to pull up detailed metadata profiles, operator logging details, or run instant barcode string evaluations.
                 </div>
             </div>
-        `,
-                width: '520px',
-                confirmButtonColor: '#0d6efd',
-                confirmButtonText: 'Let\'s Begin <i class="fa-solid fa-chevron-right ms-1" style="font-size: 10px;"></i>',
-                customClass: {
-                    popup: 'shadow-lg border-0 rounded-3',
-                    actions: 'mt-1'
-                }
-            });
+        </div>
+    `,
+            width: '540px',
+            confirmButtonColor: '#0d6efd',
+            confirmButtonText: 'Got It <i class="fa-solid fa-check ms-1" style="font-size: 11px;"></i>',
+            customClass: {
+                popup: 'shadow-lg border-0 rounded-3',
+                actions: 'mt-1'
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        if (!sessionStorage.getItem('all_list_guide_shown')) {
+            sessionStorage.setItem('all_list_guide_shown', 'true');
+            showStorageMatrixGuide();
         }
+
+        $('#btnShowStorageGuide').on('click', function(e) {
+            e.preventDefault();
+            showStorageMatrixGuide();
+        });
     });
 </script>
 
