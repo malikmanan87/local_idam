@@ -329,6 +329,19 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
   * Menambah skrip pendengar pertukaran tab DataTables (`shown.bs.tab`) dengan pengekalan status tab aktif melalui `sessionStorage.getItem('active_bulk_tab')` serta pelarasan semula kelebaran lajur secara automatik (`columns.adjust().responsive.recalc()`).
 * **Commit**: `75f789d`
 
+### RBM-20: Pelaksanaan Tab Bersepadu (Pilihan B) pada Halaman Disposal Management (`/specimen/disposal`)
+* **Tujuan**: Menyatukan 3 jadual baris gilir pelupusan berasingan (*7-day Queue*, *14-day Queue*, *21-day Queue*) ke dalam satu kad luar bersepadu berkonsepkan tab navigasi (*Tabbed Interface*) seperti di `/role` bagi mengelakkan keperluan *scrolling* panjang ke bawah, sambil mengekalkan identiti jadual dan fungsi operasi masing-masing 100%.
+* **Tindakan**:
+  * Mengemaskini [disposal_list.php](file:///c:/xampp/htdocs/idam/app/Views/forms/disposal_list.php).
+  * Menggantikan 3 kad tebal bertingkat lama (`shadow-lg border-0`) kepada satu kad luar bersepadu `<div class="card mb-4 shadow-sm">` bersama pengepala tab moden `<ul class="nav nav-tabs card-header-tabs" id="disposalTabs">`:
+    * **Tab 1:** `<i class="fa-solid fa-snowflake text-primary me-2"></i>7-Day Queue` (mengawal `#datatable7`).
+    * **Tab 2:** `<i class="fa-solid fa-box-archive text-info me-2"></i>14-Day Queue` (mengawal `#datatable14`).
+    * **Tab 3:** `<i class="fa-solid fa-temperature-arrow-down text-danger me-2"></i>21-Day Queue` (mengawal `#datatable21`).
+  * Mengekalkan semua butang operasi spesifik pada setiap panel tab (*Request to Dispose*, *Untick All / Select All*, *Dispose Selected*, *Dispose All in Queue*).
+  * Menyelaraskan kelas ketiga-tiga jadual kepada `<table class="table table-striped table-bordered align-middle w-100">` dan pengepala `<thead class="table-light text-center">`.
+  * Menambah skrip pendengar pertukaran tab DataTables (`shown.bs.tab`) dengan pengekalan status tab aktif melalui `sessionStorage.getItem('active_disposal_tab')` serta pelarasan kelebaran lajur automatik (`columns.adjust().responsive.recalc()`).
+* **Commit**: `4268777`
+
 ---
 
 ## 2.3 Peraturan Tetap Operasi Pentadbir (Standing Deployment Rule)
