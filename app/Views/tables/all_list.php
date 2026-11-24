@@ -115,9 +115,9 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             <?php endif; ?>
 
             <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                <span class="small fw-semibold text-white-50 me-1"><i class="fa-solid fa-filter me-1"></i>Kategori Storan:</span>
+                <span class="small fw-semibold text-white-50 me-1"><i class="fa-solid fa-filter me-1"></i>Storage Category:</span>
                 <button type="button" class="btn btn-sm btn-light duration-filter-btn active" data-duration="all">
-                    <i class="fa-solid fa-list-ul me-1"></i> Semua Kategori
+                    <i class="fa-solid fa-list-ul me-1"></i> All Categories
                 </button>
                 <button type="button" class="btn btn-sm text-white duration-filter-btn" style="background:#1E90FF;" data-duration="1">
                     7-day (Chiller)
@@ -283,17 +283,17 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
             ]
         });
 
-        // Interaksi Klik Butang Penapis Kategori Tempoh
+        // Category duration filter button interaction
         $(document).on('click', '.duration-filter-btn', function(e) {
             e.preventDefault();
             $('.duration-filter-btn').removeClass('active');
             $(this).addClass('active');
             selectedDuration = $(this).data('duration');
 
-            // Pastikan tab ALL diaktifkan jika pengguna sedang berada di tab visualizer unit
+            // Ensure ALL tab is active if user is currently viewing a unit visualizer tab
             $('button[data-bs-target="#list"]').tab('show');
 
-            // Muat semula data jadual DataTable mengikut kategori dipilih
+            // Reload DataTable with the selected category filter
             specimensTable.ajax.reload();
         });
 
