@@ -135,53 +135,94 @@
                 <li class="breadcrumb-item active">Reports</li>
             </ol>
 
-            <ul class="nav nav-pills mb-4 bg-dark p-2 rounded" id="reportTab" role="tablist">
-                <li class="nav-item">
-                    <button class="nav-link <?= $activeTab == 'stats' ? 'active' : '' ?> text-white" id="stats-tab" data-bs-toggle="pill" data-bs-target="#stats-pane" type="button" role="tab"><i class="fa-solid fa-chart-pie me-2"></i>Registration Statistics</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link <?= $activeTab == 'disposal' ? 'active' : '' ?> text-white" id="disposal-tab" data-bs-toggle="pill" data-bs-target="#disposal-pane" type="button" role="tab"><i class="fa-solid fa-dumpster-fire me-2"></i>Disposal Audit Logs</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link <?= $activeTab == 'cancel' ? 'active' : '' ?> text-white" id="cancel-tab" data-bs-toggle="pill" data-bs-target="#cancel-pane" type="button" role="tab"><i class="fa-solid fa-rectangle-xmark me-2"></i>Cancelled Logs</button>
-                </li>
-            </ul>
+            <style>
+                .card-header-tabs .nav-link {
+                    color: #495057;
+                    font-weight: 600;
+                    border-top-left-radius: 0.4rem;
+                    border-top-right-radius: 0.4rem;
+                    padding: 0.65rem 1.25rem;
+                    transition: all 0.2s ease-in-out;
+                }
+                .card-header-tabs .nav-link.active {
+                    color: #0d6efd !important;
+                    background-color: #fff;
+                    border-color: #dee2e6 #dee2e6 #fff;
+                    border-bottom: 2px solid #fff;
+                }
+                .card-header-tabs .nav-link:hover:not(.active) {
+                    color: #0d6efd;
+                    background-color: rgba(13, 110, 253, 0.05);
+                    border-color: #e9ecef #e9ecef #dee2e6;
+                }
+            </style>
 
-            <div class="tab-content" id="reportTabContent">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
+                    <ul class="nav nav-tabs card-header-tabs" id="reportTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $activeTab == 'stats' ? 'active' : '' ?> fw-bold" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-pane" type="button" role="tab" aria-controls="stats-pane" aria-selected="<?= $activeTab == 'stats' ? 'true' : 'false' ?>">
+                                <i class="fa-solid fa-chart-pie text-primary me-2"></i>Registration Statistics
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $activeTab == 'disposal' ? 'active' : '' ?> fw-bold" id="disposal-tab" data-bs-toggle="tab" data-bs-target="#disposal-pane" type="button" role="tab" aria-controls="disposal-pane" aria-selected="<?= $activeTab == 'disposal' ? 'true' : 'false' ?>">
+                                <i class="fa-solid fa-dumpster-fire text-danger me-2"></i>Disposal Audit Logs
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $activeTab == 'cancel' ? 'active' : '' ?> fw-bold" id="cancel-tab" data-bs-toggle="tab" data-bs-target="#cancel-pane" type="button" role="tab" aria-controls="cancel-pane" aria-selected="<?= $activeTab == 'cancel' ? 'true' : 'false' ?>">
+                                <i class="fa-solid fa-rectangle-xmark text-warning me-2"></i>Cancelled Logs
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-4">
+                    <div class="tab-content" id="reportTabContent">
 
-                <div class="tab-pane fade <?= $activeTab == 'stats' ? 'show active' : '' ?>" id="stats-pane" role="tabpanel">
-                    <form method="get" action="<?= site_url('reports') ?>" class="row g-2 mb-3">
-                        <input type="hidden" name="tab" value="stats">
-                        <div class="col-md-4">
-                            <label class="form-label text-white small">Duration Range</label>
-                            <select id="stats_duration" name="duration" class="form-select bg-light">
-                                <option value="7" <?= $selectedDuration == 7 ? 'selected' : '' ?>>Past 7 Days</option>
-                                <option value="30" <?= $selectedDuration == 30 ? 'selected' : '' ?>>Past 30 Days</option>
-                                <option value="365" <?= $selectedDuration == 365 ? 'selected' : '' ?>>Past Year</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label text-white small">Group Statistics By</label>
-                            <select id="stats_frequency" name="frequency" class="form-select bg-light">
-                                <option value="weekly" <?= $selectedFrequency == 'weekly' ? 'selected' : '' ?>>Weekly Summary</option>
-                                <option value="monthly" <?= $selectedFrequency == 'monthly' ? 'selected' : '' ?>>Monthly Summary</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 align-self-end"><button type="submit" class="btn btn-primary w-100">Generate Stats</button></div>
-                    </form>
+                        <!-- ========================================== -->
+                        <!-- TAB 1: REGISTRATION STATISTICS             -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade <?= $activeTab == 'stats' ? 'show active' : '' ?>" id="stats-pane" role="tabpanel" aria-labelledby="stats-tab">
+                            <form method="get" action="<?= site_url('reports') ?>" class="p-3 bg-light rounded-3 border mb-4">
+                                <input type="hidden" name="tab" value="stats">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="form-label text-dark small fw-bold">Duration Range</label>
+                                        <select id="stats_duration" name="duration" class="form-select bg-white">
+                                            <option value="7" <?= $selectedDuration == 7 ? 'selected' : '' ?>>Past 7 Days</option>
+                                            <option value="30" <?= $selectedDuration == 30 ? 'selected' : '' ?>>Past 30 Days</option>
+                                            <option value="365" <?= $selectedDuration == 365 ? 'selected' : '' ?>>Past Year</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label text-dark small fw-bold">Group Statistics By</label>
+                                        <select id="stats_frequency" name="frequency" class="form-select bg-white">
+                                            <option value="weekly" <?= $selectedFrequency == 'weekly' ? 'selected' : '' ?>>Weekly Summary</option>
+                                            <option value="monthly" <?= $selectedFrequency == 'monthly' ? 'selected' : '' ?>>Monthly Summary</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fa-solid fa-arrows-rotate me-1"></i> Generate Stats
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
 
-                    <div class="card mb-4 shadow">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fa-solid fa-table me-1"></i> Registration Volume Breakdown Metrics</span>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-success" onclick="exportTableToExcel('statsTable', 'Registration_Stats_Report')">Excel</button>
-                                <button class="btn btn-danger" id="exportStatsPDF">PDF</button>
-                                <button class="btn btn-secondary" id="printStatsTable">Print</button>
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <h5 class="card-title mb-0 fw-bold text-secondary">
+                                    <i class="fa-solid fa-table text-primary me-2"></i>Registration Volume Breakdown Metrics
+                                </h5>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-success" onclick="exportTableToExcel('statsTable', 'Registration_Stats_Report')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                                    <button class="btn btn-danger" id="exportStatsPDF"><i class="fa-solid fa-file-pdf me-1"></i> PDF</button>
+                                    <button class="btn btn-secondary" id="printStatsTable"><i class="fa-solid fa-print me-1"></i> Print</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
+
                             <div class="table-responsive">
-                                <table id="statsTable" class="table table-bordered table-hover align-middle">
+                                <table id="statsTable" class="table table-bordered table-hover align-middle w-100">
                                     <thead class="table-light">
                                         <tr>
                                             <th>TIMEFRAME</th>
@@ -194,13 +235,11 @@
                                     <tbody>
                                         <?php if (!empty($statsReports)): ?>
                                             <?php foreach ($statsReports as $row):
-                                                // 🌟 PENGURUSAN TIMEFRAME SELAMAT: Mencegah kegagalan fungsi date() PHP
                                                 $timeframe = isset($row['year']) ? $row['year'] : date('Y');
 
                                                 if (isset($row['week']) && $row['week'] !== null && $row['week'] !== '') {
                                                     $timeframe .= ' (W' . $row['week'] . ')';
                                                 } elseif (isset($row['month']) && $row['month'] !== null && $row['month'] !== '') {
-                                                    // Mencegah ralat mktime jika nilai month adalah string atau tidak sah
                                                     $monthNum = (int)$row['month'];
                                                     $monthName = ($monthNum >= 1 && $monthNum <= 12) ? date('M', mktime(0, 0, 0, $monthNum, 1)) : '';
                                                     if (!empty($monthName)) {
@@ -229,47 +268,55 @@
                                 </table>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="tab-pane fade <?= $activeTab == 'disposal' ? 'show active' : '' ?>" id="disposal-pane" role="tabpanel">
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-3">
-                            <label class="form-label text-white small">Unit</label>
-                            <select id="unit" class="form-select bg-light">
-                                <?php if (($userRole ?? 3) === 3 || count($units) > 1): ?>
-                                    <option value="all" <?= $selectedUnit == 'all' ? 'selected' : '' ?>><?= (($userRole ?? 3) === 3) ? 'ALL UNITS' : 'ALL MY UNITS' ?></option>
-                                <?php endif; ?>
-                                <?php foreach ($units as $u): ?>
-                                    <option value="<?= $u['units_code'] ?>" <?= ($selectedUnit == $u['units_code'] || count($units) === 1) ? 'selected' : '' ?>><?= $u['units_name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label text-white small">Storage Area</label>
-                            <select id="storage_duration" class="form-select bg-light">
-                                <option value="all">ALL STORAGE</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label text-white small">Creation Date Range</label>
-                            <input type="text" id="daterange" value="<?= esc($selectedDate) ?>" class="form-control" placeholder="All Dates">
-                        </div>
-                        <div class="col-md-2 align-self-end"><button type="button" id="filterDisposalBtn" class="btn btn-danger w-100">Filter Audit</button></div>
-                    </div>
-
-                    <div class="card mb-4 shadow">
-                        <div class="card-header d-flex justify-content-between align-items-center bg-light">
-                            <span><i class="fa-solid fa-history me-1"></i> Disposal Audit Trail Log Datasets</span>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-success" onclick="exportTableToExcel('disposeTable', 'Disposal_Audit_Logs')">Excel</button>
-                                <button class="btn btn-danger" id="exportDisposePDF">PDF</button>
-                                <button class="btn btn-secondary" id="printDisposeTable">Print</button>
+                        <!-- ========================================== -->
+                        <!-- TAB 2: DISPOSAL AUDIT LOGS                 -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade <?= $activeTab == 'disposal' ? 'show active' : '' ?>" id="disposal-pane" role="tabpanel" aria-labelledby="disposal-tab">
+                            <div class="p-3 bg-light rounded-3 border mb-4">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label text-dark small fw-bold">Unit</label>
+                                        <select id="unit" class="form-select bg-white">
+                                            <?php if (($userRole ?? 3) === 3 || count($units) > 1): ?>
+                                                <option value="all" <?= $selectedUnit == 'all' ? 'selected' : '' ?>><?= (($userRole ?? 3) === 3) ? 'ALL UNITS' : 'ALL MY UNITS' ?></option>
+                                            <?php endif; ?>
+                                            <?php foreach ($units as $u): ?>
+                                                <option value="<?= $u['units_code'] ?>" <?= ($selectedUnit == $u['units_code'] || count($units) === 1) ? 'selected' : '' ?>><?= $u['units_name'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label text-dark small fw-bold">Storage Area</label>
+                                        <select id="storage_duration" class="form-select bg-white">
+                                            <option value="all">ALL STORAGE</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label text-dark small fw-bold">Creation Date Range</label>
+                                        <input type="text" id="daterange" value="<?= esc($selectedDate) ?>" class="form-control bg-white" placeholder="All Dates">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" id="filterDisposalBtn" class="btn btn-danger w-100">
+                                            <i class="fa-solid fa-filter me-1"></i> Filter Audit
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <h5 class="card-title mb-0 fw-bold text-secondary">
+                                    <i class="fa-solid fa-clock-rotate-left text-danger me-2"></i>Disposal Audit Trail Log Datasets
+                                </h5>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-success" onclick="exportTableToExcel('disposeTable', 'Disposal_Audit_Logs')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                                    <button class="btn btn-danger" id="exportDisposePDF"><i class="fa-solid fa-file-pdf me-1"></i> PDF</button>
+                                    <button class="btn btn-secondary" id="printDisposeTable"><i class="fa-solid fa-print me-1"></i> Print</button>
+                                </div>
+                            </div>
+
                             <div class="table-responsive">
-                                <table id="disposeTable" class="table table-bordered table-hover align-middle">
+                                <table id="disposeTable" class="table table-bordered table-hover align-middle w-100">
                                     <thead class="table-dark text-center" style="font-size: 0.8rem;">
                                         <tr>
                                             <th>NO</th>
@@ -291,41 +338,49 @@
                                 </table>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="tab-pane fade <?= $activeTab == 'cancel' ? 'show active' : '' ?>" id="cancel-pane" role="tabpanel">
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label text-white small">Laboratory Unit</label>
-                            <select id="cancel_unit" class="form-select bg-light">
-                                <?php if (($userRole ?? 3) === 3 || count($units) > 1): ?>
-                                    <option value="all" <?= $selectedCancelUnit == 'all' ? 'selected' : '' ?>><?= (($userRole ?? 3) === 3) ? 'ALL UNITS' : 'ALL MY UNITS' ?></option>
-                                <?php endif; ?>
-                                <?php foreach ($units as $u): ?>
-                                    <option value="<?= $u['units_code'] ?>" <?= ($selectedCancelUnit == $u['units_code'] || count($units) === 1) ? 'selected' : '' ?>><?= $u['units_name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-5">
-                            <label class="form-label text-white small">Creation Date Range</label>
-                            <input type="text" id="cancel_daterange" value="<?= esc($selectedCancelDate) ?>" class="form-control" placeholder="All Dates">
-                        </div>
-                        <div class="col-md-3 align-self-end"><button type="button" id="filterCancelBtn" class="btn btn-warning w-100 fw-semibold">Filter Cancelled</button></div>
-                    </div>
-
-                    <div class="card mb-4 shadow">
-                        <div class="card-header d-flex justify-content-between align-items-center bg-light">
-                            <span><i class="fa-solid fa-rectangle-xmark me-1 text-danger"></i> Cancelled Registration Audit Records</span>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-success" onclick="exportTableToExcel('cancelTable', 'Cancelled_Audit_Logs')">Excel</button>
-                                <button class="btn btn-danger" id="exportCancelPDF">PDF</button>
-                                <button class="btn btn-secondary" id="printCancelTable">Print</button>
+                        <!-- ========================================== -->
+                        <!-- TAB 3: CANCELLED LOGS                      -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade <?= $activeTab == 'cancel' ? 'show active' : '' ?>" id="cancel-pane" role="tabpanel" aria-labelledby="cancel-tab">
+                            <div class="p-3 bg-light rounded-3 border mb-4">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="form-label text-dark small fw-bold">Laboratory Unit</label>
+                                        <select id="cancel_unit" class="form-select bg-white">
+                                            <?php if (($userRole ?? 3) === 3 || count($units) > 1): ?>
+                                                <option value="all" <?= $selectedCancelUnit == 'all' ? 'selected' : '' ?>><?= (($userRole ?? 3) === 3) ? 'ALL UNITS' : 'ALL MY UNITS' ?></option>
+                                            <?php endif; ?>
+                                            <?php foreach ($units as $u): ?>
+                                                <option value="<?= $u['units_code'] ?>" <?= ($selectedCancelUnit == $u['units_code'] || count($units) === 1) ? 'selected' : '' ?>><?= $u['units_name'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label text-dark small fw-bold">Creation Date Range</label>
+                                        <input type="text" id="cancel_daterange" value="<?= esc($selectedCancelDate) ?>" class="form-control bg-white" placeholder="All Dates">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button" id="filterCancelBtn" class="btn btn-warning w-100 fw-semibold text-dark">
+                                            <i class="fa-solid fa-filter me-1"></i> Filter Cancelled
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <h5 class="card-title mb-0 fw-bold text-secondary">
+                                    <i class="fa-solid fa-rectangle-xmark text-warning me-2"></i>Cancelled Registration Audit Records
+                                </h5>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-success" onclick="exportTableToExcel('cancelTable', 'Cancelled_Audit_Logs')"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+                                    <button class="btn btn-danger" id="exportCancelPDF"><i class="fa-solid fa-file-pdf me-1"></i> PDF</button>
+                                    <button class="btn btn-secondary" id="printCancelTable"><i class="fa-solid fa-print me-1"></i> Print</button>
+                                </div>
+                            </div>
+
                             <div class="table-responsive">
-                                <table id="cancelTable" class="table table-bordered table-hover align-middle">
+                                <table id="cancelTable" class="table table-bordered table-hover align-middle w-100">
                                     <thead class="table-dark text-center" style="font-size: 0.8rem;">
                                         <tr>
                                             <th>NO</th>
@@ -345,9 +400,9 @@
                                 </table>
                             </div>
                         </div>
+
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
@@ -445,8 +500,9 @@
             }
         });
 
-        // Tab adjustment for DataTables header alignment
+        // Tab adjustment for DataTables header alignment and persistence
         $('#reportTab button').on('shown.bs.tab', function(e) {
+            sessionStorage.setItem('active_report_tab', $(e.target).attr('data-bs-target'));
             setTimeout(function() {
                 $.fn.dataTable.tables({
                     visible: true,
@@ -454,6 +510,16 @@
                 }).columns.adjust();
             }, 150);
         });
+
+        // Kekalkan tab yang aktif jika tiada parameter URL query 'tab'
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has('tab')) {
+            const savedReportTab = sessionStorage.getItem('active_report_tab');
+            if (savedReportTab && $(`button[data-bs-target="${savedReportTab}"]`).length) {
+                var reportTabTrigger = new bootstrap.Tab(document.querySelector(`button[data-bs-target="${savedReportTab}"]`));
+                reportTabTrigger.show();
+            }
+        }
 
         // Unit change -> reload storage dropdown
         $('#unit').on('change', function() {
