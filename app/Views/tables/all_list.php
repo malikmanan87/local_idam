@@ -62,29 +62,35 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
 <style>
-    .nav-tabs .nav-link {
-        background-color: #6c757d;
-        color: #fff;
-        border: 1px solid #6c757d;
-        border-radius: 0.25rem 0.25rem 0 0;
-        margin-right: 2px;
-        transition: background 0.2s;
+    .card-header-tabs .nav-link {
+        color: #495057;
+        font-weight: 600;
+        border-top-left-radius: 0.4rem;
+        border-top-right-radius: 0.4rem;
+        padding: 0.65rem 1.25rem;
+        transition: all 0.2s ease-in-out;
     }
-
-    .nav-tabs .nav-link.active {
-        background-color: #0d6efd !important;
-        color: #fff !important;
-        border-bottom-color: transparent;
+    .card-header-tabs .nav-link.active {
+        color: #0d6efd !important;
+        background-color: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-bottom: 2px solid #fff;
+    }
+    .card-header-tabs .nav-link:hover:not(.active) {
+        color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.05);
+        border-color: #e9ecef #e9ecef #dee2e6;
     }
 
     .duration-filter-btn {
         transition: all 0.2s ease-in-out;
-        opacity: 0.82;
+        opacity: 0.85;
         border-radius: 20px;
         padding: 0.28rem 0.85rem;
         font-size: 0.8rem;
         cursor: pointer;
         border: 1px solid transparent;
+        font-weight: 500;
     }
     .duration-filter-btn:hover {
         opacity: 1;
@@ -93,7 +99,7 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
     .duration-filter-btn.active {
         opacity: 1 !important;
         font-weight: 700 !important;
-        box-shadow: 0 0 0 2px #fff, 0 4px 8px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 0 0 2px #fff, 0 3px 8px rgba(0,0,0,0.25) !important;
         transform: translateY(-1px);
     }
 </style>
@@ -104,7 +110,7 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
 
             <h1 class="mt-4 text-white">All Specimens</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<?= base_url('/') ?>">Dashboard</a></li>
                 <li class="breadcrumb-item active">List & Containers</li>
             </ol>
 
@@ -114,50 +120,55 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                 <div class="alert alert-danger"><?= esc($msg) ?></div>
             <?php endif; ?>
 
-            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                <span class="small fw-semibold text-white-50 me-1"><i class="fa-solid fa-filter me-1"></i>Storage Category:</span>
-                <button type="button" class="btn btn-sm btn-light duration-filter-btn active" data-duration="all">
-                    <i class="fa-solid fa-list-ul me-1"></i> All Categories
-                </button>
-                <button type="button" class="btn btn-sm text-white duration-filter-btn" style="background:#1E90FF;" data-duration="1">
-                    7-day (Chiller)
-                </button>
-                <button type="button" class="btn btn-sm text-dark duration-filter-btn" style="background:#00bcd4;" data-duration="4">
-                    14-day (Chiller)
-                </button>
-                <button type="button" class="btn btn-sm text-dark duration-filter-btn" style="background:#FFD700;" data-duration="2">
-                    14-day (Freezer)
-                </button>
-                <button type="button" class="btn btn-sm text-white duration-filter-btn" style="background:#FF4500;" data-duration="3">
-                    21-day (Freezer)
-                </button>
-                <span class="badge bg-secondary ms-md-auto py-2 px-3">Empty Slot</span>
-            </div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
+                    <ul class="nav nav-tabs card-header-tabs" id="specimenTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold" id="tab-all-btn" data-bs-toggle="tab" data-bs-target="#list" type="button" role="tab" aria-controls="list" aria-selected="true">
+                                <i class="fa-solid fa-vials text-primary me-2"></i>All Specimens
+                            </button>
+                        </li>
+                        <?php foreach ($units as $u): ?>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold" id="tab-unit-<?= esc($u['units_code']) ?>-btn" data-bs-toggle="tab" data-bs-target="#unit-<?= esc($u['units_code']) ?>" type="button" role="tab" aria-controls="unit-<?= esc($u['units_code']) ?>" aria-selected="false">
+                                    <i class="fa-solid fa-boxes-stacked text-secondary me-2"></i><?= esc($u['units_code']) ?>
+                                </button>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <div class="card-body p-4">
 
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#list">ALL</button>
-                </li>
-                <?php foreach ($units as $u): ?>
-                    <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#unit-<?= esc($u['units_code']) ?>">
-                            <?= esc($u['units_code']) ?>
+                    <!-- Storage Category Filter Buttons (Kekalkan Gaya Kategori Storan) -->
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-4 p-3 bg-light rounded-3 border">
+                        <span class="small fw-bold text-dark me-1"><i class="fa-solid fa-filter text-primary me-1"></i>Storage Category:</span>
+                        <button type="button" class="btn btn-sm btn-white border duration-filter-btn active shadow-sm" data-duration="all">
+                            <i class="fa-solid fa-list-ul me-1"></i> All Categories
                         </button>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+                        <button type="button" class="btn btn-sm text-white duration-filter-btn" style="background:#1E90FF;" data-duration="1">
+                            7-day (Chiller)
+                        </button>
+                        <button type="button" class="btn btn-sm text-dark duration-filter-btn" style="background:#00bcd4;" data-duration="4">
+                            14-day (Chiller)
+                        </button>
+                        <button type="button" class="btn btn-sm text-dark duration-filter-btn" style="background:#FFD700;" data-duration="2">
+                            14-day (Freezer)
+                        </button>
+                        <button type="button" class="btn btn-sm text-white duration-filter-btn" style="background:#FF4500;" data-duration="3">
+                            21-day (Freezer)
+                        </button>
+                        <span class="badge bg-secondary ms-md-auto py-2 px-3">Empty Slot</span>
+                    </div>
 
-            <div class="tab-content mt-3">
+                    <div class="tab-content" id="specimenTabsContent">
 
-                <div class="tab-pane fade show active" id="list">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fa-solid fa-vials"></i> All Specimens
-                        </div>
-                        <div class="card-body">
+                        <!-- ========================================== -->
+                        <!-- TAB 1: ALL SPECIMENS TABLE                 -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade show active" id="list" role="tabpanel" aria-labelledby="tab-all-btn">
                             <div class="table-responsive">
-                                <table id="specimensTable" class="table table-striped table-bordered table-hover">
-                                    <thead class="text-center table-light small">
+                                <table id="specimensTable" class="table table-striped table-bordered align-middle w-100">
+                                    <thead class="table-light text-center">
                                         <tr>
                                             <th>#</th>
                                             <th>Specimen</th>
@@ -177,26 +188,28 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                                 </table>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <?php foreach ($units as $u):
-                    $unitCode = $u['units_code'];
-                    $unitContainers = $containersByUnit[$unitCode] ?? [];
-                ?>
-                    <div class="tab-pane fade" id="unit-<?= esc($unitCode) ?>">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fa-solid fa-boxes-stacked"></i>
-                                Unit <?= esc($unitCode) ?> — <?= esc($u['units_name']) ?>
-                            </div>
-                            <div class="card-body">
+                        <!-- ========================================== -->
+                        <!-- TAB 2+: UNIT CONTAINERS MATRIX             -->
+                        <!-- ========================================== -->
+                        <?php foreach ($units as $u):
+                            $unitCode = $u['units_code'];
+                            $unitContainers = $containersByUnit[$unitCode] ?? [];
+                        ?>
+                            <div class="tab-pane fade" id="unit-<?= esc($unitCode) ?>" role="tabpanel" aria-labelledby="tab-unit-<?= esc($unitCode) ?>-btn">
+                                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                                    <h5 class="mb-0 fw-bold text-secondary">
+                                        <i class="fa-solid fa-boxes-stacked text-primary me-2"></i>Unit <?= esc($unitCode) ?> — <?= esc($u['units_name']) ?>
+                                    </h5>
+                                    <span class="badge bg-light text-dark border">
+                                        <?= count($unitContainers) ?> Container(s)
+                                    </span>
+                                </div>
 
                                 <?php if (empty($unitContainers)): ?>
                                     <div class="alert alert-secondary">No containers configured in this unit.</div>
                                 <?php else: ?>
                                     <div class="d-flex flex-wrap justify-content-center gap-4">
-
                                         <?php foreach ($unitContainers as $c):
                                             $slots = $occupiedMap[$c['container_id']] ?? [];
                                             $fullCombinedTitle = $cleanTitleFunc($c['storage_name'], $c['container_label']);
@@ -224,15 +237,13 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
 
                                             </div>
                                         <?php endforeach; ?>
-
                                     </div>
                                 <?php endif; ?>
-
                             </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                        <?php endforeach; ?>
 
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -282,6 +293,18 @@ if (!empty($allSpecimens) && is_array($allSpecimens)) {
                 }
             ]
         });
+
+        // Tab switching: adjust DataTable columns and persist active tab in sessionStorage
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+            sessionStorage.setItem('active_all_list_tab', $(e.target).attr('data-bs-target'));
+            $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().responsive.recalc();
+        });
+
+        // Restore active tab from sessionStorage on page load
+        const savedTab = sessionStorage.getItem('active_all_list_tab');
+        if (savedTab && $(`button[data-bs-target="${savedTab}"]`).length) {
+            $(`button[data-bs-target="${savedTab}"]`).tab('show');
+        }
 
         // Category duration filter button interaction
         $(document).on('click', '.duration-filter-btn', function(e) {
