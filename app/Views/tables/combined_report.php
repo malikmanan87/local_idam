@@ -6,7 +6,7 @@
 <style>
     /* Standardisasi Gaya DataTables */
     .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 0.1rem !important;
+        padding: 0.2rem 0.4rem !important;
     }
 
     .dataTables_wrapper .dataTables_filter input {
@@ -14,23 +14,23 @@
         padding: 0.375rem 0.75rem;
         border: 1px solid #ced4da;
         margin-left: 0.5em;
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 0.85rem;
+        font-family: inherit;
+        font-size: 0.875rem;
     }
 
     .dataTables_wrapper .dataTables_length select {
         border-radius: 6px;
         padding: 0.375rem 1.75rem 0.375rem 0.75rem;
         border: 1px solid #ced4da;
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 0.85rem;
+        font-family: inherit;
+        font-size: 0.875rem;
     }
 
     .dataTables_wrapper .dataTables_info,
     .dataTables_wrapper .dataTables_paginate {
         padding-top: 1rem;
-        font-size: 0.82rem;
-        font-family: 'Segoe UI', sans-serif;
+        font-size: 0.875rem;
+        font-family: inherit;
     }
 
     /* 📋 STANDARDISASI FON INDUK SEMUA JADUAL HTML */
@@ -40,8 +40,8 @@
         width: 100% !important;
         table-layout: fixed;
         word-wrap: break-word;
-        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
-        font-size: 0.82rem;
+        font-family: inherit;
+        font-size: 0.875rem;
         color: #333333;
     }
 
@@ -51,7 +51,7 @@
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        font-size: 0.8rem;
+        font-size: 0.875rem;
         padding: 10px 8px !important;
         vertical-align: middle;
     }
@@ -62,6 +62,18 @@
         padding: 8px 8px !important;
         vertical-align: middle;
         line-height: 1.4;
+    }
+
+    #disposeTable .badge,
+    #statsTable .badge,
+    #cancelTable .badge {
+        font-size: 0.8rem;
+        padding: 0.35em 0.65em;
+    }
+
+    .card-body .form-select,
+    .card-body .form-control {
+        font-size: 0.875rem;
     }
 
     /* Tetapan Struktur Lebar Kolum Khas */
@@ -223,7 +235,7 @@
 
                             <div class="table-responsive">
                                 <table id="statsTable" class="table table-bordered table-hover align-middle w-100">
-                                    <thead class="table-light">
+                                    <thead class="table-light text-center">
                                         <tr>
                                             <th>TIMEFRAME</th>
                                             <th>LABORATORY UNIT</th>
@@ -317,7 +329,7 @@
 
                             <div class="table-responsive">
                                 <table id="disposeTable" class="table table-bordered table-hover align-middle w-100">
-                                    <thead class="table-dark text-center" style="font-size: 0.8rem;">
+                                    <thead class="table-light text-center">
                                         <tr>
                                             <th>NO</th>
                                             <th>SPECIMEN NO</th>
@@ -381,7 +393,7 @@
 
                             <div class="table-responsive">
                                 <table id="cancelTable" class="table table-bordered table-hover align-middle w-100">
-                                    <thead class="table-dark text-center" style="font-size: 0.8rem;">
+                                    <thead class="table-light text-center">
                                         <tr>
                                             <th>NO</th>
                                             <th>SPECIMEN NO</th>
