@@ -305,6 +305,20 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
   * Menambah butang pemicu manual **Guide** (`<button id="btnShowStorageGuide">`) bersebelahan petunjuk *Empty Slot* supaya pengguna boleh membuka semula modal panduan pada bila-bila masa tanpa perlu bergantung kepada sesi pertama sahaja.
 * **Commit**: `9f13055`
 
+### RBM-18: Penyeragaman Gaya Kad & Jadual Workspace Registry History pada New Entry (`/specimen`)
+* **Tujuan**: Menyelaraskan reka bentuk kad borang pendaftaran pukal dan jadual *Workspace Registry History (Last 48 Hours)* pada halaman New Entry (`/specimen`) agar konsisten dengan piawaian moden dan cerah seperti `/role` dan `/specimen/all_list` tanpa mengubah sebarang fungsi sistem.
+* **Tindakan**:
+  * Mengemaskini [bulk_registration.php](file:///c:/xampp/htdocs/idam/app/Views/forms/bulk_registration.php).
+  * **Kad Borang Pendaftaran**: Menggantikan kad lama dengan `<div class="card mb-4 shadow-sm">` bersama `<div class="card-header bg-white py-3 border-bottom">` dan tajuk `<h5>` kemas.
+  * **Kad & Jadual Sejarah Pendaftaran**:
+    * Menukar pengepala gelap lama (`bg-dark`) kepada `<div class="card-header bg-white py-3 border-bottom">` lengkap dengan lencana jumlah rekod pendaftaran (`<span class="badge bg-secondary rounded-pill px-3 py-2">`).
+    * Menyelaraskan kelas jadual kepada `<table id="historyLogTable" class="table table-striped table-bordered align-middle w-100">` dan pengepala `<thead class="table-light text-center">`.
+    * Memperkemaskan lajur Status kepada lencana berwarna Bootstrap (`Active` hijau, `Cancelled` sekunder, `Disposed` kuning).
+    * Memaparkan nama pengguna `Created By` secara bersih tanpa domain `@unisza.edu.my`.
+    * Menyeragamkan butang tindakan pembatalan kepada `<button class="btn btn-sm btn-outline-danger cancel-reg-btn">`.
+    * Mengemaskini definisi lajur DataTables (`columnDefs`) bagi susunan tengah teks dan menyahaktifkan sorting pada lajur Action (indeks 7).
+* **Commit**: `b16e55e`
+
 ---
 
 ## 2.3 Peraturan Tetap Operasi Pentadbir (Standing Deployment Rule)
