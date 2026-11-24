@@ -131,7 +131,8 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4 text-white">Centralized Reports Terminal</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item active">Management Analytics & Audit Trail</li>
+                <li class="breadcrumb-item"><a href="<?= base_url('/') ?>">Dashboard</a></li>
+                <li class="breadcrumb-item active">Reports</li>
             </ol>
 
             <ul class="nav nav-pills mb-4 bg-dark p-2 rounded" id="reportTab" role="tablist">
