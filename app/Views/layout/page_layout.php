@@ -6,6 +6,7 @@
 $dbConnection = \Config\Database::connect();
 $maintenanceRow = $dbConnection->table('system_settings')->where('setting_key', 'maintenance_mode')->get()->getRow();
 $isMaintenanceActive = $maintenanceRow ? (int)$maintenanceRow->setting_value === 1 : false;
+$pendingUsersCount = $dbConnection->table('users')->where('status', 0)->countAllResults();
 ?>
 
 <head>
@@ -138,7 +139,7 @@ $isMaintenanceActive = $maintenanceRow ? (int)$maintenanceRow->setting_value ===
                         <?php if (in_array($role, [1, 2, 3], true)): ?>
                             <div class="sb-sidenav-menu-heading">Main</div>
                             <a class="nav-link" href="<?= base_url('/') ?>">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-chart-line"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-gauge-high"></i></div>
                                 Dashboard
                             </a>
                         <?php endif; ?>
@@ -147,16 +148,16 @@ $isMaintenanceActive = $maintenanceRow ? (int)$maintenanceRow->setting_value ===
                             <div class="sb-sidenav-menu-heading">Specimen</div>
 
                             <a class="nav-link" href="<?= base_url('specimen') ?>">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-layer-group text-success"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-vial-circle-check text-success"></i></div>
                                 <span class="text-success fw-bold">New Entry</span>
                             </a>
 
                             <a class="nav-link" href="<?= base_url('specimen/all_list') ?>">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-list"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-vials"></i></div>
                                 List & Containers
                             </a>
                             <a class="nav-link" href="<?= base_url('specimen/disposal') ?>">
-                                <div class="sb-nav-link-icon"><i class="fa-regular fa-trash-can"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-dumpster-fire"></i></div>
                                 Disposal Management
                             </a>
                         <?php endif; ?>
@@ -164,17 +165,20 @@ $isMaintenanceActive = $maintenanceRow ? (int)$maintenanceRow->setting_value ===
                         <?php if (in_array($role, [2, 3], true)): ?>
                             <div class="sb-sidenav-menu-heading">Reports</div>
                             <a class="nav-link" href="<?= base_url('reports') ?>">
-                                <div class="sb-nav-link-icon"><i class="fa-regular fa-paste"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-chart-pie"></i></div>
                                 Centralized Reports
                             </a>
 
                             <div class="sb-sidenav-menu-heading">Management</div>
                             <a class="nav-link" href="<?= base_url('role') ?>">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-user-group"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-user-gear"></i></div>
                                 Users
+                                <?php if ($pendingUsersCount > 0): ?>
+                                    <span class="badge bg-danger rounded-pill ms-auto small" style="font-size: 0.7rem;"><?= $pendingUsersCount ?></span>
+                                <?php endif; ?>
                             </a>
                             <a class="nav-link" href="<?= base_url('maintenance') ?>">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
                                 Maintenance
                             </a>
                         <?php endif; ?>
@@ -184,7 +188,7 @@ $isMaintenanceActive = $maintenanceRow ? (int)$maintenanceRow->setting_value ===
 
                             <a class="nav-link <?= (url_is('admin/settings')) ? 'active' : '' ?> <?= $isMaintenanceActive ? 'maintenance-active-blink' : '' ?>" href="<?= base_url('admin/settings') ?>">
                                 <div class="sb-nav-link-icon">
-                                    <i class="fa-solid fa-screwdriver-wrench <?= $isMaintenanceActive ? 'text-danger' : 'text-warning' ?>"></i>
+                                    <i class="fa-solid fa-power-off <?= $isMaintenanceActive ? 'text-danger' : 'text-warning' ?>"></i>
                                 </div>
                                 Maintenance Mode
 
