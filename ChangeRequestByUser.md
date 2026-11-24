@@ -296,6 +296,15 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
   * Memasang fungsi pengekalan tab aktif `sessionStorage` (`active_all_list_tab`) serta pelarasan semula kelebaran kolum DataTable secara automatik (`columns.adjust().responsive.recalc()`) semasa pertukaran tab.
 * **Commit**: `fc22a64`
 
+### RBM-17: Kemaskini Modal Storage Matrix Guide & Panduan Penapis Kategori pada `all_list`
+* **Tujuan**: Menambah baik panduan visual *Storage Matrix Guide* (SweetAlert) pada halaman All Specimens (`/specimen/all_list`) untuk menerangkan fungsi butang penapis kategori storan serta menyediakan butang pembuka panduan manual.
+* **Tindakan**:
+  * Mengemaskini teks modal panduan interaktif dalam [all_list.php](file:///c:/xampp/htdocs/idam/app/Views/tables/all_list.php) dengan memasukkan seksyen **Category Filter**:
+    * Menerangkan bahawa pengguna boleh mengklik mana-mana butang **Storage Category** di bahagian atas jadual (*7-day Chiller*, *14-day Chiller*, *14-day Freezer*, *21-day Freezer*) untuk menapis dan melihat spesimen mengikut kategori yang dikehendaki secara pantas.
+  * Membungkus logik paparan panduan ke dalam fungsi JavaScript `showStorageMatrixGuide()`.
+  * Menambah butang pemicu manual **Guide** (`<button id="btnShowStorageGuide">`) bersebelahan petunjuk *Empty Slot* supaya pengguna boleh membuka semula modal panduan pada bila-bila masa tanpa perlu bergantung kepada sesi pertama sahaja.
+* **Commit**: `9f13055`
+
 ---
 
 ## 2.3 Peraturan Tetap Operasi Pentadbir (Standing Deployment Rule)
