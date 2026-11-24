@@ -21,19 +21,24 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
 <style>
-    .nav-tabs .nav-link {
-        background-color: #6c757d;
-        color: #fff;
-        border: 1px solid #6c757d;
-        border-radius: 0.25rem 0.25rem 0 0;
-        margin-right: 2px;
-        transition: background 0.2s;
+    .card-header-tabs .nav-link {
+        color: #495057;
+        font-weight: 600;
+        border-top-left-radius: 0.4rem;
+        border-top-right-radius: 0.4rem;
+        padding: 0.65rem 1.25rem;
+        transition: all 0.2s ease-in-out;
     }
-
-    .nav-tabs .nav-link.active {
-        background-color: #0d6efd !important;
-        color: #fff !important;
-        border-bottom-color: transparent;
+    .card-header-tabs .nav-link.active {
+        color: #0d6efd !important;
+        background-color: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        border-bottom: 2px solid #fff;
+    }
+    .card-header-tabs .nav-link:hover:not(.active) {
+        color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.05);
+        border-color: #e9ecef #e9ecef #dee2e6;
     }
 
     .slot-box {
@@ -93,183 +98,196 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
             <?php endif; ?>
 
             <!-- ======================================================== -->
-            <!-- CARD 1: BULK SPECIMEN REGISTRATION FORM                  -->
+            <!-- SINGLE OUTER CARD WITH HEADER TABS (STYLE SEPERTI /role) -->
             <!-- ======================================================== -->
             <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-dark">
-                        <i class="fa-solid fa-vials text-primary me-2"></i>Bulk Specimen Registration Form
-                    </h5>
+                <div class="card-header bg-white border-bottom-0 pb-0 pt-3">
+                    <ul class="nav nav-tabs card-header-tabs" id="bulkSpecimenTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold" id="tab-register-btn" data-bs-toggle="tab" data-bs-target="#tab-register-pane" type="button" role="tab" aria-controls="tab-register-pane" aria-selected="true">
+                                <i class="fa-solid fa-vials text-primary me-2"></i>Registration Form
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold" id="tab-history-btn" data-bs-toggle="tab" data-bs-target="#tab-history-pane" type="button" role="tab" aria-controls="tab-history-pane" aria-selected="false">
+                                <i class="fa-solid fa-clock-rotate-left text-secondary me-2"></i>Workspace Registry History (Last 48 Hours)
+                                <?php if (!empty($recentHistory)): ?>
+                                    <span class="badge bg-secondary rounded-pill ms-1"><?= count($recentHistory) ?></span>
+                                <?php else: ?>
+                                    <span class="badge bg-light text-muted border rounded-pill ms-1">0</span>
+                                <?php endif; ?>
+                            </button>
+                        </li>
+                    </ul>
                 </div>
                 <div class="card-body p-4">
-                    <form method="post" action="<?= base_url('specimen/saveBulk') ?>" id="specimenForm">
-                        <?= csrf_field() ?>
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Unit Workspace Selection</label>
-                            <div id="unitButtons" class="btn-group d-flex flex-wrap" role="group">
-                                <?php foreach ($units as $unit): ?>
-                                    <?php
-                                    $unitId = (int)$unit['units_id'];
+                    <div class="tab-content" id="bulkSpecimenTabsContent">
 
-                                    if ($userRole !== 3 && !in_array($unitId, $sessionUnitIds, true)) {
-                                        continue;
-                                    }
+                        <!-- ========================================== -->
+                        <!-- TAB 1: BULK SPECIMEN REGISTRATION FORM     -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade show active" id="tab-register-pane" role="tabpanel" aria-labelledby="tab-register-btn">
+                            <form method="post" action="<?= base_url('specimen/saveBulk') ?>" id="specimenForm">
+                                <?= csrf_field() ?>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Unit Workspace Selection</label>
+                                    <div id="unitButtons" class="btn-group d-flex flex-wrap" role="group">
+                                        <?php foreach ($units as $unit): ?>
+                                            <?php
+                                            $unitId = (int)$unit['units_id'];
 
-                                    $statusClass = $unit['status'] != 1 ? 'inactive-btn' : '';
-                                    $badge = '';
-                                    if ($unit['status'] == 2) $badge = '<span class="badge bg-danger ms-1">Inactive</span>';
-                                    if ($unit['status'] == 3) $badge = '<span class="badge bg-warning ms-1">Maintenance</span>';
-                                    ?>
-                                    <button type="button"
-                                        class="btn btn-outline-primary m-1 unit-btn <?= $statusClass ?>"
-                                        data-id="<?= $unit['units_id'] ?>"
-                                        data-code="<?= esc($unit['units_code']) ?>"
-                                        data-status="<?= $unit['status'] ?>"
-                                        data-name="<?= esc($unit['units_name']) ?>"
-                                        data-remark="<?= esc($unit['remark'] ?? 'No remarks registered') ?>">
-                                        <?= esc($unit['units_name']) ?> <?= $badge ?>
-                                    </button>
-                                <?php endforeach ?>
-                            </div>
-                        </div>
+                                            if ($userRole !== 3 && !in_array($unitId, $sessionUnitIds, true)) {
+                                                continue;
+                                            }
 
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Storage Equipment</label>
-                            <div id="storageButtons" class="btn-group d-flex flex-wrap" role="group"></div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Container Box Number</label>
-                            <div id="containerNumberButtons" class="btn-group d-flex flex-wrap" role="group"></div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Container Label (Today Valid Batch)</label>
-                            <div id="containerButtons" class="btn-group d-flex flex-wrap" role="group"></div>
-                        </div>
-
-                        <input type="hidden" name="unit_id" id="unit_id_hidden">
-                        <input type="hidden" name="container_id" id="container_id_hidden">
-
-                        <div class="mb-1 small text-danger fw-bold" id="slotCounter"></div>
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Specimen Matrix Slot Placement Grid (Auto-Populating)</label>
-                            <div class="mb-2 d-flex align-items-center gap-3">
-                                <div class="d-flex align-items-center gap-1">
-                                    <div style="width:16px; height:16px; background-color:#6c757d; border-radius: 2px;"></div>
-                                    <small class="ms-1 text-dark fw-medium">Occupied</small>
+                                            $statusClass = $unit['status'] != 1 ? 'inactive-btn' : '';
+                                            $badge = '';
+                                            if ($unit['status'] == 2) $badge = '<span class="badge bg-danger ms-1">Inactive</span>';
+                                            if ($unit['status'] == 3) $badge = '<span class="badge bg-warning ms-1">Maintenance</span>';
+                                            ?>
+                                            <button type="button"
+                                                class="btn btn-outline-primary m-1 unit-btn <?= $statusClass ?>"
+                                                data-id="<?= $unit['units_id'] ?>"
+                                                data-code="<?= esc($unit['units_code']) ?>"
+                                                data-status="<?= $unit['status'] ?>"
+                                                data-name="<?= esc($unit['units_name']) ?>"
+                                                data-remark="<?= esc($unit['remark'] ?? 'No remarks registered') ?>">
+                                                <?= esc($unit['units_name']) ?> <?= $badge ?>
+                                            </button>
+                                        <?php endforeach ?>
+                                    </div>
                                 </div>
-                                <div class="d-flex align-items-center gap-1">
-                                    <div style="width:16px; height:16px; background-color:#28a745; border-radius: 2px;"></div>
-                                    <small class="ms-1 text-dark fw-medium">Targeted for Bulk Input</small>
-                                </div>
-                                <div class="d-flex align-items-center gap-1">
-                                    <div style="width:16px; height:16px; background-color:#ffffff; border:1px solid #ced4da; border-radius: 2px;"></div>
-                                    <small class="ms-1 text-dark fw-medium">Available</small>
-                                </div>
-                            </div>
 
-                            <div id="specimenRadios" class="d-grid border rounded p-2 bg-light"
-                                style="grid-template-columns: repeat(10, 1fr); gap: 4px; max-height: 260px; overflow-y: auto;">
-                                <div class="text-muted small p-1 text-center w-100 py-4" id="fallbackRadioPlaceholder">
-                                    <i class="fa-solid fa-box-open me-1"></i> Selection sequence context waiting. Please tap a container above.
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Storage Equipment</label>
+                                    <div id="storageButtons" class="btn-group d-flex flex-wrap" role="group"></div>
                                 </div>
-                            </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Container Box Number</label>
+                                    <div id="containerNumberButtons" class="btn-group d-flex flex-wrap" role="group"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Container Label (Today Valid Batch)</label>
+                                    <div id="containerButtons" class="btn-group d-flex flex-wrap" role="group"></div>
+                                </div>
+
+                                <input type="hidden" name="unit_id" id="unit_id_hidden">
+                                <input type="hidden" name="container_id" id="container_id_hidden">
+
+                                <div class="mb-1 small text-danger fw-bold" id="slotCounter"></div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Specimen Matrix Slot Placement Grid (Auto-Populating)</label>
+                                    <div class="mb-2 d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center gap-1">
+                                            <div style="width:16px; height:16px; background-color:#6c757d; border-radius: 2px;"></div>
+                                            <small class="ms-1 text-dark fw-medium">Occupied</small>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <div style="width:16px; height:16px; background-color:#28a745; border-radius: 2px;"></div>
+                                            <small class="ms-1 text-dark fw-medium">Targeted for Bulk Input</small>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <div style="width:16px; height:16px; background-color:#ffffff; border:1px solid #ced4da; border-radius: 2px;"></div>
+                                            <small class="ms-1 text-dark fw-medium">Available</small>
+                                        </div>
+                                    </div>
+
+                                    <div id="specimenRadios" class="d-grid border rounded p-2 bg-light"
+                                        style="grid-template-columns: repeat(10, 1fr); gap: 4px; max-height: 260px; overflow-y: auto;">
+                                        <div class="text-muted small p-1 text-center w-100 py-4" id="fallbackRadioPlaceholder">
+                                            <i class="fa-solid fa-box-open me-1"></i> Selection sequence context waiting. Please tap a container above.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Scan / Input Multiple Specimen Codes (One code per line)</label>
+                                    <textarea name="specimens_codes" id="specimens_codes" class="form-control" rows="6"
+                                        placeholder="Scan barcodes or paste sample codes here...&#10;Example:&#10;SPEC-001&#10;SPEC-002" required disabled></textarea>
+                                    <div class="form-text text-muted" id="bulkCountLabel">0 valid samples identified in entry stream pool.</div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success px-4 shadow-sm" id="submitBtn" disabled>
+                                    <i class="fa-solid fa-circle-check me-1"></i> Register Specimen Batch Units
+                                </button>
+                            </form>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold">Scan / Input Multiple Specimen Codes (One code per line)</label>
-                            <textarea name="specimens_codes" id="specimens_codes" class="form-control" rows="6"
-                                placeholder="Scan barcodes or paste sample codes here...&#10;Example:&#10;SPEC-001&#10;SPEC-002" required disabled></textarea>
-                            <div class="form-text text-muted" id="bulkCountLabel">0 valid samples identified in entry stream pool.</div>
-                        </div>
-
-                        <button type="submit" class="btn btn-success px-4 shadow-sm" id="submitBtn" disabled>
-                            <i class="fa-solid fa-circle-check me-1"></i> Register Specimen Batch Units
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- ======================================================== -->
-            <!-- CARD 2: WORKSPACE REGISTRY HISTORY (LAST 48 HOURS)        -->
-            <!-- ======================================================== -->
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-secondary">
-                        <i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Workspace Registry History (Last 48 Hours) — Global View
-                    </h5>
-                    <span class="badge bg-secondary rounded-pill px-3 py-2">
-                        <?= count($recentHistory ?? []) ?> Record(s)
-                    </span>
-                </div>
-                <div class="card-body p-4">
-                    <div class="table-responsive">
-                        <table id="historyLogTable" class="table table-striped table-bordered align-middle w-100">
-                            <thead class="table-light text-center">
-                                <tr>
-                                    <th style="width: 40px;">#</th>
-                                    <th>Specimen Code</th>
-                                    <th>Laboratory Unit</th>
-                                    <th>Placement Location (Storage - Box - Slot)</th>
-                                    <th>Registered By</th>
-                                    <th>Timestamp</th>
-                                    <th>Status</th>
-                                    <th style="width: 90px;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                $count = 1;
-                                if (!empty($recentHistory) && is_array($recentHistory)):
-                                    foreach ($recentHistory as $log):
-                                ?>
-                                        <tr class="text-center">
-                                            <td class="text-muted"><?= $count++ ?></td>
-                                            <td class="fw-bold text-primary"><?= esc($log['specimens_code']) ?></td>
-                                            <td><span class="badge bg-light text-dark border py-1 px-2"><?= esc($log['units_name']) ?></span></td>
-                                            <td class="text-start py-2">
-                                                <div style="font-size: 11px;" class="text-muted">
-                                                    <i class="fa-solid fa-database me-1"></i><?= esc($log['storage_name']) ?>
-                                                </div>
-                                                <span class="fw-semibold"><?= esc($log['container_label']) ?></span>
-                                                <span class="badge bg-secondary p-1" style="font-size: 10px;">Slot <?= esc($log['slot_no']) ?></span>
-                                            </td>
-                                            <td class="text-muted fw-medium"><?= esc(explode('@', $log['created_by'])[0]) ?></td>
-                                            <td class="text-nowrap text-muted" style="font-size: 11px;">
-                                                <i class="fa-regular fa-clock me-1"></i><?= date('d-m-Y h:i A', strtotime($log['created_at'])) ?>
-                                            </td>
-                                            <td>
-                                                <?php
-                                                $statusVal = (int)$log['status'];
-                                                $statusBadge = match ($statusVal) {
-                                                    0 => '<span class="badge bg-secondary">Cancelled</span>',
-                                                    1 => '<span class="badge bg-success">Active</span>',
-                                                    2 => '<span class="badge bg-warning text-dark">Disposed</span>',
-                                                    default => '<span class="badge bg-light text-dark border">Unknown</span>'
-                                                };
-                                                echo $statusBadge;
-                                                ?>
-                                            </td>
-                                            <td>
-                                                <?php if ((int)$log['status'] !== 0): ?>
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-outline-danger cancel-reg-btn py-1 px-2"
-                                                        data-code="<?= esc($log['specimens_code']) ?>">
-                                                        <i class="fa-solid fa-trash-can me-1"></i>Cancel
-                                                    </button>
-                                                <?php else: ?>
-                                                    <span class="text-muted small">Not Available</span>
-                                                <?php endif; ?>
-                                            </td>
+                        <!-- ========================================== -->
+                        <!-- TAB 2: WORKSPACE REGISTRY HISTORY TABLE    -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade" id="tab-history-pane" role="tabpanel" aria-labelledby="tab-history-btn">
+                            <div class="table-responsive">
+                                <table id="historyLogTable" class="table table-striped table-bordered align-middle w-100">
+                                    <thead class="table-light text-center">
+                                        <tr>
+                                            <th style="width: 40px;">#</th>
+                                            <th>Specimen Code</th>
+                                            <th>Laboratory Unit</th>
+                                            <th>Placement Location (Storage - Box - Slot)</th>
+                                            <th>Registered By</th>
+                                            <th>Timestamp</th>
+                                            <th>Status</th>
+                                            <th style="width: 90px;">Action</th>
                                         </tr>
-                                <?php
-                                    endforeach;
-                                endif;
-                                ?>
-                            </tbody>
-                        </table>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $count = 1;
+                                        if (!empty($recentHistory) && is_array($recentHistory)):
+                                            foreach ($recentHistory as $log):
+                                        ?>
+                                                <tr class="text-center">
+                                                    <td class="text-muted"><?= $count++ ?></td>
+                                                    <td class="fw-bold text-primary"><?= esc($log['specimens_code']) ?></td>
+                                                    <td><span class="badge bg-light text-dark border py-1 px-2"><?= esc($log['units_name']) ?></span></td>
+                                                    <td class="text-start py-2">
+                                                        <div style="font-size: 11px;" class="text-muted">
+                                                            <i class="fa-solid fa-database me-1"></i><?= esc($log['storage_name']) ?>
+                                                        </div>
+                                                        <span class="fw-semibold"><?= esc($log['container_label']) ?></span>
+                                                        <span class="badge bg-secondary p-1" style="font-size: 10px;">Slot <?= esc($log['slot_no']) ?></span>
+                                                    </td>
+                                                    <td class="text-muted fw-medium"><?= esc(explode('@', $log['created_by'])[0]) ?></td>
+                                                    <td class="text-nowrap text-muted" style="font-size: 11px;">
+                                                        <i class="fa-regular fa-clock me-1"></i><?= date('d-m-Y h:i A', strtotime($log['created_at'])) ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php
+                                                        $statusVal = (int)$log['status'];
+                                                        $statusBadge = match ($statusVal) {
+                                                            0 => '<span class="badge bg-secondary">Cancelled</span>',
+                                                            1 => '<span class="badge bg-success">Active</span>',
+                                                            2 => '<span class="badge bg-warning text-dark">Disposed</span>',
+                                                            default => '<span class="badge bg-light text-dark border">Unknown</span>'
+                                                        };
+                                                        echo $statusBadge;
+                                                        ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php if ((int)$log['status'] !== 0): ?>
+                                                            <button type="button"
+                                                                class="btn btn-sm btn-outline-danger cancel-reg-btn py-1 px-2"
+                                                                data-code="<?= esc($log['specimens_code']) ?>">
+                                                                <i class="fa-solid fa-trash-can me-1"></i>Cancel
+                                                            </button>
+                                                        <?php else: ?>
+                                                            <span class="text-muted small">Not Available</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                        <?php
+                                            endforeach;
+                                        endif;
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -381,6 +399,18 @@ $sessionUnitIds = array_map('intval', array_map('trim', $sessionUnitIds));
                 emptyTable: "<i class='fa-solid fa-folder-open me-1'></i> No bulk batches registered across the system within the last 48 hours."
             }
         });
+
+        // Tab switching: adjust DataTable columns and persist active tab in sessionStorage
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+            sessionStorage.setItem('active_bulk_tab', $(e.target).attr('data-bs-target'));
+            $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().responsive.recalc();
+        });
+
+        // Restore active tab from sessionStorage on page load if present
+        const savedBulkTab = sessionStorage.getItem('active_bulk_tab');
+        if (savedBulkTab && $(`button[data-bs-target="${savedBulkTab}"]`).length) {
+            $(`button[data-bs-target="${savedBulkTab}"]`).tab('show');
+        }
 
         // =========================================================================
         // SEKURITI MAKSIMUM: PIPELINE AJAK POST DENGAN REGENERASI CSRF DIKEMASKINI LIVE
