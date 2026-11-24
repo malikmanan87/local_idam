@@ -44,26 +44,34 @@
                                 <?php if (in_array($role, [1, 2, 3], true)): ?>
                                     <a href="<?= $requestUrl ?>" class="btn btn-sm glow-button"
                                         data-days="<?= $days ?>"
-                                        id="requestBtn_<?= $tableId ?>">
+                                        id="requestBtn_<?= $tableId ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Submit a disposal approval request for all mature specimens in this queue">
                                         Request to Dispose
                                     </a>
                                 <?php endif; ?>
 
                                 <?php if (in_array($role, [2, 3], true)): ?>
                                     <button type="button" class="btn btn-sm btn-outline-secondary toggle-all-checkboxes-btn"
-                                        data-table="#<?= esc($tableId) ?>" data-state="checked">
+                                        data-table="#<?= esc($tableId) ?>" data-state="checked"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Select or uncheck all specimen checkboxes on the current page">
                                         <i class="fa-solid fa-square-minus me-1"></i> Untick All
                                     </button>
 
                                     <button type="button" class="btn btn-sm btn-outline-danger dispose-selected-btn"
-                                        data-table="#<?= esc($tableId) ?>">
+                                        data-table="#<?= esc($tableId) ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Permanently dispose only the checked specimens on this table">
                                         <i class="fa-solid fa-dumpster me-1"></i> Dispose Selected
                                     </button>
 
                                     <button type="button" class="btn btn-sm btn-danger dispose-all-queue-btn"
                                         data-table="#<?= esc($tableId) ?>"
                                         data-days="<?= $days ?>"
-                                        data-label="<?= esc($label) ?>">
+                                        data-label="<?= esc($label) ?>"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Permanently dispose ALL eligible specimens in this entire queue across all pages">
                                         <i class="fa-solid fa-dumpster-fire me-1"></i> Dispose All in Queue
                                     </button>
                                 <?php endif; ?>
@@ -207,6 +215,12 @@
     }
 
     $(function() {
+        // Initialize Bootstrap 5 Tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
         // Inisialisasi 3 jadual disposal berasingan menggunakan AJAX server-side
         var table7  = initDisposalTable('#datatable7',  7);
         var table14 = initDisposalTable('#datatable14', 14);
