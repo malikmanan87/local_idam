@@ -135,6 +135,7 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
 | **RBM-12** | Penyelarasan Saiz Fon dan Gaya Pengepala (*Thead*) pada `/reports` | `app/Views/tables/combined_report.php` | **SELESAI** | `312f7c4` |
 | **RBM-13** | Penyeragaman Format Tarikh 12-Jam & Pemotongan Domain Email pada `all_list` | `app/Controllers/SpecimenController.php` | **SELESAI** | `b995212` |
 | **RBM-14** | Butang Penapis Kategori Interaktif (*Interactive Duration Filters*) & Lencana Kategori Storan pada `all_list` | `all_list.php`, `SpecimenController.php` | **SELESAI** | `216964b` |
+| **RBM-15** | Penyeragaman Bahasa Inggeris (*English Standardization*) pada `all_list` | `app/Views/tables/all_list.php` | **SELESAI** | `cd69530` |
 
 ---
 
@@ -276,6 +277,14 @@ Bahagian ini mendokumentasikan semua permintaan penambahbaikan teknikal, penyela
   * **Lencana Kategori dalam Jadual**: Menyuntik lencana kategori storan (contoh: `<span class="badge" style="background:#00bcd4; color:#000;">14-day (Chiller)</span>`) di bawah nama storan pada lajur *Storage*.
   * **Sokongan Carian Kata Kunci**: Menambah keupayaan carian DataTables bagi kata kunci `"chiller"`, `"freezer"`, `"7-day"`, `"14-day"`, dan `"21-day"`.
 * **Commit**: `216964b`
+
+### RBM-15: Penyeragaman Bahasa Inggeris (English Standardization) pada `all_list`
+* **Tujuan**: Memastikan keseluruhan teks dan elemen antaramuka pada halaman All Specimens (`/specimen/all_list`) konsisten dalam bahasa Inggeris sepenuhnya.
+* **Tindakan**:
+  * Mengemaskini label penapis kategori daripada *Kategori Storan* kepada **`Storage Category:`**.
+  * Menyelaraskan butang penapis utama daripada *Semua Kategori* kepada **`All Categories`**.
+  * Menyelaraskan komen kod dalaman JavaScript ke bahasa Inggeris standard.
+* **Commit**: `cd69530`
 
 ---
 
